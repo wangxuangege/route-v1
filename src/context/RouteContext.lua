@@ -69,7 +69,7 @@ end
 --------------------------------------------------------------------------------------
 local function getRequestParams(ngx)
     if ngx.__TEST__ then
-        return ngx.__TEST__.requestParams
+        return ngx.__TEST__.requestParams or {}
     end
 
     return {}

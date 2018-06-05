@@ -42,3 +42,14 @@ end
 string.trim = function(str)
     return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
+
+--------------------------------------------------------------------------------------
+-- 转换为json字符串
+--------------------------------------------------------------------------------------
+string.toJSONString = function(obj)
+    if type(obj) ~= 'table' then
+        return tostring(obj)
+    end
+    local json = require("json")
+    return json.encode(obj)
+end

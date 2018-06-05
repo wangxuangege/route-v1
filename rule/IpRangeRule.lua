@@ -163,12 +163,4 @@ function _M.check(rules)
     return true
 end
 
---------------------------------------------------------------------------------------
--- 转换为字符串
---------------------------------------------------------------------------------------
-function _M:toString()
-    local json = require("json")
-    return json.encode(self)
-end
-
 return _M

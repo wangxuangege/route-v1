@@ -1,6 +1,7 @@
 local IPRangeRule = require("rule.IPRangeRule")
 local ParamTailRule = require("rule.ParamTailRule")
 local RouteContext = require("context.RouteContext")
+require("util.StringUtil")
 
 local function printAll(...)
     local args = { ... }
@@ -11,12 +12,12 @@ end
 
 print('-----------------------------------------------------------------------------------')
 local ipRangeRule = IPRangeRule.new("3074337169~3074337174,upstream1|3~5,upstream2|6~7,upstream3")
-print(ipRangeRule:toString())
+print(string.toJSONString(ipRangeRule))
 
 print('-----------------------------------------------------------------------------------')
 
 local paramTailRule = ParamTailRule:new("mid~3~upstream2,000,001,5DD,003,444,007|instMid~5~upstream4,12345,67890", 100)
-print(paramTailRule:toString())
+print(string.toJSONString(paramTailRule))
 
 print('-----------------------------------------------------------------------------------')
 local context = RouteContext:new({

@@ -36,3 +36,11 @@ print('-------------------------------------------------------------------------
 local ret4, ret5, ret6 = paramTailRule:getUpstream(context)
 printAll(ret4, ret5, ret6)
 print('-----------------------------------------------------------------------------------')
+
+local LogUtil = require("util.LogUtil")
+local log = LogUtil:new("hostname")
+log:debug("debug")
+log:info("info")
+log:warn("warn")
+log:error("error")
+log:debug("debug2")

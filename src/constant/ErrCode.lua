@@ -19,6 +19,9 @@ local errCode = {
     DB_INIT_ERROR = { 40002, '数据库操作初始化异常' },
     DB_CURSOR_ERROR = { 40003, '数据库获取游标失败' },
 
+    ADMIN_PARAM_ERROR = { 50001, '路由规则管理操作参数问题' },
+    ADMIN_INNER_ERROR = { 50002, '命令实现内部错误' },
+
     UNKNOWN_ERROR = { 99999, '未知异常 ' },
 }
 

@@ -41,7 +41,11 @@ end
 -- @return
 --------------------------------------------------------------------------------------
 local function getRequestParams(ngx)
-    if ngx.__TEST__ then
+    if not ngx then
+        return {}
+    end
+
+    if ngx and ngx.__TEST__ then
         return ngx.__TEST__.requestParams or {}
     end
 

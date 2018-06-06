@@ -7,6 +7,9 @@ return {
     -- DEBUG=4,INFO=3,WARN=2,ERR=1,关闭日志=0
     LOG_LEVEL = 4,
 
+    -- 允许规则的最大条目
+    ALLOW_RULE_SIZE = 30,
+
     -- mysql配置
     MYSQL_ADDRESS = "192.168.171.131",
     MYSQL_DB = "route",

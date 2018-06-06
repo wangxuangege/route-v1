@@ -18,3 +18,11 @@ print("解析规则：", "ret1=", ret1, ",ret2=", string.toJSONString(ret2))
 if ret1 then
     print("命中的规则：", string.toJSONString(ret3))
 end
+
+local json = require("json")
+local copyNew = ParamTailRule:copy(json.decode(json.encode(paramTailRule)))
+local ret4, ret5, ret6 = copyNew:getUpstream(context)
+print("解析规则：", "ret4=", ret4, ",ret5=", string.toJSONString(ret5))
+if ret4 then
+    print("命中的规则：", string.toJSONString(ret6))
+end

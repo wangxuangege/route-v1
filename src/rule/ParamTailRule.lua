@@ -47,6 +47,22 @@ function _M:new(rulesStr, priority)
 end
 
 --------------------------------------------------------------------------------------
+-- 拷贝构造方法
+-- @param rule 待拷贝的对象
+-- @return 拷贝的结果，这样拷贝后的对象就能够方法调用
+--------------------------------------------------------------------------------------
+function _M:copy(rule)
+    if type(rule) ~= 'table' then
+        return rule
+    end
+
+    self = {}
+    return setmetatable(self, { __index = function(table, key)
+        return rule[key] or _M[key]
+    end })
+end
+
+--------------------------------------------------------------------------------------
 -- 获取路由upstream
 -- @param context 路由上下文对象
 -- @return

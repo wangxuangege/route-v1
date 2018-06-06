@@ -6,7 +6,7 @@ module(..., package.seeall);
 -- @param s 要查找的字符串，
 -- @return 若查找成功，返回所在的索引，若查找失败，则返回-1
 -------------------------------------------------------------------------------------
-string.indexOf = function(str, s)
+indexOf = function(str, s)
     if type(str) ~= 'string' or type(s) ~= 'string' then
         return -1
     end
@@ -23,7 +23,7 @@ end
 -- @param delimiter 分隔符，默认为，
 -- @return 分割后获取一个字符串数组
 --------------------------------------------------------------------------------------
-string.split = function(str, delimiter)
+split = function(str, delimiter)
     if type(delimiter) ~= "string" or string.len(delimiter) <= 0 then
         return
     end
@@ -48,7 +48,7 @@ end
 -- 判断字符串是否为空
 -- @param str 待判断的字符串
 --------------------------------------------------------------------------------------
-string.isEmpty = function(str)
+isEmpty = function(str)
     return str == nil or type(str) ~= "string" or str == ""
 end
 
@@ -56,14 +56,14 @@ end
 -- 去除字符串首尾空格
 -- @param str 待处理的字符串
 --------------------------------------------------------------------------------------
-string.trim = function(str)
+trim = function(str)
     return (string.gsub(s, "^%s*(.-)%s*$", "%1"))
 end
 
 --------------------------------------------------------------------------------------
 -- 转换为json字符串
 --------------------------------------------------------------------------------------
-string.toJSONString = function(obj)
+toJSONString = function(obj)
     if type(obj) ~= 'table' then
         return tostring(obj)
     end

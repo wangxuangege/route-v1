@@ -55,7 +55,7 @@ function _M:getUpstream(context)
         local paramValue = requestParams[paramKey]
 
         -- 只有获取请求参数value不空时候，并且value的值大于长度才会去判断
-        if not string.isEmpty(paramValue) and #paramValue >= length then
+        if not StringUtil.isEmpty(paramValue) and #paramValue >= length then
             local tailValue = string.sub(paramValue, #paramValue - length + 1)
             if ArrayUtil.contain(tails, tailValue) then
                 return true, upstream, rule
@@ -78,29 +78,29 @@ end
 -- 2) 若符合格式，则返回{true}
 --------------------------------------------------------------------------------------
 function _M.parse(rulesStr)
-    if string.isEmpty(rulesStr) then
+    if StringUtil.isEmpty(rulesStr) then
         return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
     end
 
     -- 解析规则
-    local ruleStrArray = string.split(rulesStr, "|")
+    local ruleStrArray = StringUtil.split(rulesStr, "|")
     if not next(ruleStrArray) then
         return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
     end
 
     local result = {}
     for _, ruleStr in pairs(ruleStrArray) do
-        if string.isEmpty(ruleStr) then
+        if StringUtil.isEmpty(ruleStr) then
             return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则存在空的子规则'
         end
 
-        local strArray = string.split(ruleStr, ',')
+        local strArray = StringUtil.split(ruleStr, ',')
         if not next(ruleStrArray) or #strArray < 2 then
             return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
         end
 
         -- 第1个分割出来的一定是paramKey~length~upstream
-        local splitArray = string.split(strArray[1], '~')
+        local splitArray = StringUtil.split(strArray[1], '~')
         if not next(ruleStrArray) then
             return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
         end
@@ -108,7 +108,7 @@ function _M.parse(rulesStr)
         local paramKey = splitArray[1]
         local length = tonumber(splitArray[2])
         local upstream = splitArray[3]
-        if string.isEmpty(paramKey) or not length or string.isEmpty(upstream) then
+        if StringUtil.isEmpty(paramKey) or not length or StringUtil.isEmpty(upstream) then
             return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
         end
 
@@ -116,7 +116,7 @@ function _M.parse(rulesStr)
         local tails = {}
         for i = 2, #strArray do
             local tail = strArray[i]
-            if string.isEmpty(tail) or #tail ~= length then
+            if StringUtil.isEmpty(tail) or #tail ~= length then
                 return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
             end
             table.insert(tails, tail)
@@ -162,7 +162,7 @@ function _M.check(rules)
     for _, rule in pairs(rules) do
         local length, upstream, tails = rule['length'], rule['upstream'], rule['tails']
 
-        if string.isEmpty(upstream) then
+        if StringUtil.isEmpty(upstream) then
             return false, ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，upstream不能为空，且必须是字符串'
         end
 
@@ -177,7 +177,7 @@ function _M.check(rules)
 
         for i = 1, #tails do
             local tail = tails[i]
-            if string.isEmpty(tail) or #tail ~= length then
+            if StringUtil.isEmpty(tail) or #tail ~= length then
                 return false, ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，tail不能为空，且长度必须等于length'
             end
             if tailSet[tail] then

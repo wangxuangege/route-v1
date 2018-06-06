@@ -1,6 +1,6 @@
 module(..., package.seeall);
 
-require("util.StringUtil")
+local StringUtil = require("util.StringUtil")
 local ERR_CODE = require("constant.ErrCode")
 local Mysql = require("respository.mysql.Mysql")
 local LogUtil = require("util.LogUtil")
@@ -30,7 +30,7 @@ function invoke(requestParams)
             string.format("select * from route_rule " .. where))
 
     if not flag then
-        log:warn("查询失败，错误原因：", msg, "，错误info:", string.toJSONString(info))
+        log:warn("查询失败，错误原因：", msg, "，错误info:", StringUtil.toJSONString(info))
         return info, "数据库查询失败"
     else
         return ERR_CODE.SUCCESS, info
@@ -44,7 +44,7 @@ end
 --------------------------------------------------------------------------------------
 function checkParams(requestParams)
     local type = requestParams['type']
-    if string.isEmpty(type) then
+    if StringUtil.isEmpty(type) then
         return ERR_CODE.ADMIN_PARAM_ERROR, '查询条件中type不能为空'
     end
 
@@ -52,7 +52,7 @@ function checkParams(requestParams)
         return ERR_CODE.ADMIN_PARAM_ERROR, '查询条件中type非法'
     end
 
-    if type ~= 'ALL' and string.isEmpty(requestParams['value']) then
+    if type ~= 'ALL' and StringUtil.isEmpty(requestParams['value']) then
         return ERR_CODE.ADMIN_PARAM_ERROR, '查询条件type非All时，value不能为空'
     end
 

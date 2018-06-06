@@ -5,7 +5,7 @@
     2）失败，返回 { success: false, code: $errCode, msg: $errMsg }
 ]]--
 
-require("util.StringUtil")
+local StringUtil = require("util.StringUtil")
 local LogUtil = require("util.LogUtil")
 local ERR_CODE = require("constant.ErrCode")
 
@@ -59,11 +59,11 @@ local function callback(ngx, errInfo, ret)
     end
 
     if ngx and ngx.__TEST__ then
-        log:info(string.toJSONString(result))
+        log:info(StringUtil.toJSONString(result))
         return
     end
 
-    ngx.say(string.toJSONString(result))
+    ngx.say(StringUtil.toJSONString(result))
     ngx.exit(200)
 end
 
@@ -78,7 +78,7 @@ local function admin(ngx)
     local requestParams = getRequestParams(ngx)
     local command = requestParams['command']
 
-    if string.isEmpty(command) then
+    if StringUtil.isEmpty(command) then
         callback(ngx, ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不能为空')
         return
     end

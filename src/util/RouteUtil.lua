@@ -10,7 +10,7 @@ function ip2Long(ip)
         return -1
     end
 
-    local ipArray = string.split(ip, ".")
+    local ipArray = StringUtil.split(ip, ".")
     if ipArray == nil or #ipArray ~= 4 then
         return -1
     end

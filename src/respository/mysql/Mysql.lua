@@ -76,7 +76,7 @@ function _M:query(sql)
         return false, ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
     end
 
-    if string.isEmpty(sql) then
+    if StringUtil.isEmpty(sql) then
         return false, ERR_CODE.DB_PARAM_ERROR, '数据库查询sql不能为空'
     end
 
@@ -112,7 +112,7 @@ function _M:execute(sql)
         return false, ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
     end
 
-    if string.isEmpty(sql) then
+    if StringUtil.isEmpty(sql) then
         return false, ERR_CODE.DB_PARAM_ERROR, '数据库查询sql不能为空'
     end
 

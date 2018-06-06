@@ -13,9 +13,9 @@ local log = LogUtil:new("ADMIN")
 
 -- 支持的操作命令
 local COMMANDS = {
-    add = require("admin.AddCommand"),
-    delete = require("admin.DeleteCommand"),
-    query = require("admin.QueryCommand")
+    ADD = require("admin.QueryCommand"),
+    DELETE = require("admin.DeleteCommand"),
+    QUERY = require("admin.QueryCommand")
 }
 
 --------------------------------------------------------------------------------------
@@ -87,11 +87,13 @@ local function admin(ngx)
         local info, errMsg = commandInvoker.checkParams(requestParams)
         if info ~= ERR_CODE.SUCCESS then
             callback(ngx, info, errMsg)
+            return
         end
     end
 
     -- 执行命令
-    commandInvoker.invoke(requestParams)
+    local info, errMsg = commandInvoker.invoke(requestParams)
+    callback(ngx, info, errMsg)
 end
 
 -- 执行入口方法

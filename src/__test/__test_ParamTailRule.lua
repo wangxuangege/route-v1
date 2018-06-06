@@ -20,7 +20,7 @@ if ret1 then
     print("命中的规则：", StringUtil.toJSONString(ret3))
 end
 
-local json = require("json")
+local json = require("cjson")
 local copyNew = ParamTailRule:copy(json.decode(json.encode(paramTailRule)))
 local ret4, ret5, ret6 = copyNew:getUpstream(context)
 print("解析规则：", "ret4=", ret4, ",ret5=", StringUtil.toJSONString(ret5))

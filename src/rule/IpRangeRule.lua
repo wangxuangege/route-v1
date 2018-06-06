@@ -8,42 +8,17 @@ local _M = {
 require("util.StringUtil")
 local ERR_CODE = require("constant.ErrCode")
 local RouteUtil = require("util.RouteUtil")
+local CONSTANT = require("constant.Constant")
+local BaseRule = require("rule.BaseRule")
 
 --------------------------------------------------------------------------------------
 -- IP路由规则构造方法
 -- @param rulesStr 规则字符串
+-- @param priority 规则优先级
 -- @return 返回构造好的IP规则对象
--- 类成员变量:
--- rulesStr: 规则字符串
--- effective: 规则是否有效
--- priority: 优先级（整数）
--- rules: 规则
--- errInfo: 若规则无效，里面存放无效的错误码信息
--- errMsg: 若规则无效，存放无效规则的详细原因
 --------------------------------------------------------------------------------------
 function _M:new(rulesStr, priority)
-    self = {}
-
-    self.rulesStr = rulesStr
-    self.priority = tonumber(priority)
-    if not self.priority then
-        self.priority = 1
-    end
-    if self.priority <= 0 then
-        self.priority = 1
-    end
-
-    local effective, info, msg = _M.parse(rulesStr)
-    self.effective = effective
-    if (self.effective) then
-        self.rules = info
-    else
-        self.errInfo = info
-        self.errMsg = msg
-        self.priority = 0
-    end
-
-    return setmetatable(self, { __index = _M })
+    return BaseRule.build(self, CONSTANT.RULE_TYPE.IP_RANGE, rulesStr, priority, _M)
 end
 
 --------------------------------------------------------------------------------------
@@ -52,14 +27,7 @@ end
 -- @return 拷贝的结果，这样拷贝后的对象就能够方法调用
 --------------------------------------------------------------------------------------
 function _M:copy(rule)
-    if type(rule) ~= 'table' then
-        return rule
-    end
-
-    self = {}
-    return setmetatable(self, { __index = function(table, key)
-        return rule[key] or _M[key]
-    end })
+    return RouteUtil.copyClass(self, rule, _M)
 end
 
 --------------------------------------------------------------------------------------

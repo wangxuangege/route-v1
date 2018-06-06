@@ -27,3 +27,23 @@ function ip2Long(ip)
     end
     return result
 end
+
+--------------------------------------------------------------------------------------
+-- 拷贝构造方法实现
+-- 解决问题：当某lua对象序列化反序列化后，对象会失去调用方法的能力，只有数据部分，调用此方法，允许反序列化的对象允许调用方法
+-- @param self 需要新生成的类对象
+-- @param data 反序列化后的对象，只有数据成员
+-- @param func 含有方法对象的类对象
+--------------------------------------------------------------------------------------
+function copyClass(self, data, func)
+    if type(self) ~= 'table'
+            or type(func) ~= 'table' then
+        return data
+    end
+
+    self = {}
+    return setmetatable(self, { __index = function(table, key)
+        -- 优先从origin取得数据成员，若取不到，那么在class寻找方法
+        return data[key] or func[key]
+    end })
+end

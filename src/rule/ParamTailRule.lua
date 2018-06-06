@@ -8,6 +8,9 @@ local _M = {
 require("util.StringUtil")
 local ArrayUtil = require("util.ArrayUtil")
 local ERR_CODE = require("constant.ErrCode")
+local CONSTANT = require("constant.Constant")
+local RouteUtil = require("util.RouteUtil")
+local BaseRule = require("rule.BaseRule")
 
 --------------------------------------------------------------------------------------
 -- IP路由规则构造方法
@@ -22,28 +25,7 @@ local ERR_CODE = require("constant.ErrCode")
 -- errMsg: 若规则无效，存放无效规则的详细原因
 --------------------------------------------------------------------------------------
 function _M:new(rulesStr, priority)
-    self = {}
-
-    self.rulesStr = rulesStr
-    self.priority = tonumber(priority)
-    if not self.priority then
-        self.priority = 1
-    end
-    if self.priority <= 0 then
-        self.priority = 1
-    end
-
-    local effective, info, msg = _M.parse(rulesStr)
-    self.effective = effective
-    if (self.effective) then
-        self.rules = info
-    else
-        self.errInfo = info
-        self.errMsg = msg
-        self.priority = 0
-    end
-
-    return setmetatable(self, { __index = _M })
+    return BaseRule.build(self, CONSTANT.RULE_TYPE.PARAM_TAIL, rulesStr, priority, _M)
 end
 
 --------------------------------------------------------------------------------------
@@ -52,14 +34,7 @@ end
 -- @return 拷贝的结果，这样拷贝后的对象就能够方法调用
 --------------------------------------------------------------------------------------
 function _M:copy(rule)
-    if type(rule) ~= 'table' then
-        return rule
-    end
-
-    self = {}
-    return setmetatable(self, { __index = function(table, key)
-        return rule[key] or _M[key]
-    end })
+    return RouteUtil.copyClass(self, rule, _M)
 end
 
 --------------------------------------------------------------------------------------

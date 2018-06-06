@@ -6,6 +6,6 @@ create table route_rule
   rules_str varchar(1024) not null,
   priority int default 1,
   status varchar(16) default 'CLOSED',
-  create_time date,
-  update_time date
+  create_time datetime,
+  update_time datetime
 )

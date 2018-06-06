@@ -51,11 +51,6 @@ end
 
 -- 日志会考虑适配，若运行在ngx上面，那么直接用ngx.log打印日志，否则打印在控制台
 function _M:write(...)
-    if self.__TEST__ then
-        print(table.concat({ ... }))
-        return
-    end
-
     if self.ngx and self.ngx.log then
         self.ngx.log({ ... })
         return

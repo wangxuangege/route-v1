@@ -1,7 +1,7 @@
 --[[
     ngx路由规则配置入口
     操作返回json格式为：
-    1）成功，返回 { success: true, code: 'SUCCESS', msg: '成功' }
+    1）成功，返回 { success: true, code: 'SUCCESS', msg: '成功', model: $model }
     2）失败，返回 { success: false, code: $errCode, msg: $errMsg }
 ]]--
 
@@ -45,13 +45,20 @@ end
 -- 操作完成，响应结果
 -- 若运行在ngx上面，那么填充response，若运行在本地，直接输出日志即可
 --------------------------------------------------------------------------------------
-local function callback(ngx, errInfo, msg)
+local function callback(ngx, errInfo, ret)
+    local result = {}
+    if errInfo == ERR_CODE.SUCCESS then
+        result.success = true
+        result.code = errInfo[1]
+        result.msg = errInfo[2]
+        result.data = ret
+    else
+        result.success = false
+        result.code = errInfo[1]
+        result.msg = ret
+    end
     if ngx and ngx.__TEST__ then
-        log.info("执行结果：", string.toJSONString(errInfo))
-        if not string.isEmpty(msg) then
-            log.error("详细错误信息", msg)
-        end
-        return
+        log:info(string.toJSONString(result))
     end
 end
 
@@ -92,15 +99,16 @@ local function admin(ngx)
     end
 
     -- 执行命令
-    local info, errMsg = commandInvoker.invoke(requestParams)
-    callback(ngx, info, errMsg)
+    local errInfo, ret = commandInvoker.invoke(requestParams)
+    callback(ngx, errInfo, ret)
 end
 
 -- 执行入口方法
 admin({
     __TEST__ = {
         requestParams = {
-            command = 'add'
+            command = 'QUERY',
+            type = 'ALL',
         }
     }
 })

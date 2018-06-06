@@ -7,6 +7,7 @@ local _M = {
 
 require("util.StringUtil")
 local ERR_CODE = require("constant.ErrCode")
+local RouteUtil = require("util.RouteUtil")
 
 --------------------------------------------------------------------------------------
 -- IP路由规则构造方法
@@ -97,18 +98,34 @@ function _M.parse(rulesStr)
         if string.isEmpty(ruleStr) then
             return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则存在空的子规则'
         end
+
         local ipSplitPos, _ = string.find(ruleStr, '~')
         if not ipSplitPos then
             return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
         end
+
         local upstreamSplitPos, _ = string.find(ruleStr, ',', ipSplitPos)
         if not upstreamSplitPos then
             return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
         end
-        local from = tonumber(string.sub(ruleStr, 1, ipSplitPos - 1))
-        local to = tonumber(string.sub(ruleStr, ipSplitPos + 1, upstreamSplitPos - 1))
+
+        -- 解析IP地址，IP地址可以是整形也可以是标准形
+        local fromStr = string.sub(ruleStr, 1, ipSplitPos - 1)
+        local toStr = string.sub(ruleStr, ipSplitPos + 1, upstreamSplitPos - 1)
+        local from, to = nil, nil
+        if string.indexOf(fromStr, '.') > 0 then
+            from = RouteUtil.ip2Long(fromStr)
+        else
+            from = tonumber(fromStr)
+        end
+        if string.indexOf(toStr, '.') > 0 then
+            to = RouteUtil.ip2Long(toStr)
+        else
+            to = tonumber(toStr)
+        end
+
         local upstream = string.sub(ruleStr, upstreamSplitPos + 1)
-        if not from or not to or string.isEmpty(upstream) then
+        if not from or not to or from == -1 or to == -1 or string.isEmpty(upstream) then
             return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
         end
         table.insert(result, { range = { from = from, to = to }, upstream = upstream })

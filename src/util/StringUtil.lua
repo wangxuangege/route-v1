@@ -1,6 +1,23 @@
 module(..., package.seeall);
 
 --------------------------------------------------------------------------------------
+-- 字符串查找
+-- @param str
+-- @param s 要查找的字符串，
+-- @return 若查找成功，返回所在的索引，若查找失败，则返回-1
+-------------------------------------------------------------------------------------
+string.indexOf = function(str, s)
+    if type(str) ~= 'string' or type(s) ~= 'string' then
+        return -1
+    end
+    local pos = string.find(str, s, 1, true)
+    if pos then
+        return pos
+    end
+    return -1
+end
+
+--------------------------------------------------------------------------------------
 -- 字符串分割
 -- @param str 待分割的字符串
 -- @param delimiter 分隔符，默认为，

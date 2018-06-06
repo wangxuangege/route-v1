@@ -21,6 +21,7 @@ function _M:debug(...)
     if CONFIG.LOG_LEVEL <= 3 then
         return
     end
+
     _M:write(" DEBUG ", " TAG[", self.tag or 'ROUTE', "] ", ...)
 end
 
@@ -28,6 +29,7 @@ function _M:info(...)
     if CONFIG.LOG_LEVEL <= 2 then
         return
     end
+
     _M:write("  INFO ", " TAG[", self.tag or 'ROUTE', "] ", ...)
 end
 
@@ -35,6 +37,7 @@ function _M:warn(...)
     if CONFIG.LOG_LEVEL <= 1 then
         return
     end
+
     _M:write("  WARN ", " TAG[", self.tag or 'ROUTE', "] ", ...)
 end
 
@@ -42,6 +45,7 @@ function _M:error(...)
     if CONFIG.LOG_LEVEL <= 0 then
         return
     end
+
     _M:write(" ERROR ", " TAG[", self.tag or 'ROUTE', "] ", ...)
 end
 

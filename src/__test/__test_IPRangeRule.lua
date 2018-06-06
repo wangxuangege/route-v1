@@ -1,7 +1,7 @@
 local IPRangeRule = require("rule.IPRangeRule")
 local RouteContext = require("context.RouteContext")
 
-local ipRangeRule = IPRangeRule:new("3074337169~3074337174,upstream1|3~5,upstream2|6~7,upstream3")
+local ipRangeRule = IPRangeRule:new("3074337169~3074337174,upstream1|3~5,upstream2|172.168.1.1~172.168.1.9,upstream3")
 print("打印规则：", string.toJSONString(ipRangeRule))
 
 local context = RouteContext:new({

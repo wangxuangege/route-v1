@@ -5,7 +5,7 @@ local _M = {
     _VERSION = "0.0.1"
 }
 
-require("util.StringUtil")
+local StringUtil = require("util.StringUtil")
 local ArrayUtil = require("util.ArrayUtil")
 local ERR_CODE = require("constant.ErrCode")
 local CONSTANT = require("constant.Constant")

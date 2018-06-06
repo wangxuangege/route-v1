@@ -7,7 +7,7 @@ local _M = {
 local CONFIG = require("constant.Config")
 local LogUtil = require("util.LogUtil")
 local ERR_CODE = require("constant.ErrCode")
-require("util.StringUtil")
+local StringUtil = require("util.StringUtil")
 
 local log = LogUtil:new("MYSQL")
 

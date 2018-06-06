@@ -1,5 +1,7 @@
 module(..., package.seeall);
 
+local StringUtil = require("util.StringUtil")
+
 --------------------------------------------------------------------------------------
 -- 获取IP地址整形表示
 -- @param ip ip地址

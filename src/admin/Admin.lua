@@ -63,8 +63,10 @@ local function callback(ngx, errInfo, ret)
         return
     end
 
-    ngx.say(StringUtil.toJSONString(result))
-    ngx.exit(200)
+    if ngx then
+        ngx.say(StringUtil.toJSONString(result))
+        ngx.exit(200)
+    end
 end
 
 --------------------------------------------------------------------------------------

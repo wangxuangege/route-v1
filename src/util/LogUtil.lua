@@ -10,7 +10,7 @@ local _M = {
     _VERSION = "0.0.1"
 }
 
-local CONFIG = require("constant.config")
+local CONFIG = require("constant.Config")
 
 function _M:new(tag, ngx)
     self = {}

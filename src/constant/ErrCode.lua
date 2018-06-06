@@ -8,14 +8,18 @@ local _M = {
 local errCode = {
     SUCCESS = { 0, '成功 ' },
 
-    RULE_FORMAT_ERROR = { 1, '规则格式错误 ' },
+    RULE_FORMAT_ERROR = { 10001, '规则格式错误 ' },
 
-    RULE_UN_EFFECTIVE = { 2, '规则无效 ' },
-    RULE_UN_HIT = { 3, '规则没有命中' },
+    RULE_UN_EFFECTIVE = { 20001, '规则无效 ' },
+    RULE_UN_HIT = { 20002, '规则没有命中' },
 
-    CONTEXT_UNDEFINE_PARAM = { 4, '路由上下文参数不明确，无法计算路由' },
+    CONTEXT_UNDEFINE_PARAM = { 30001, '路由上下文参数不明确，无法计算路由' },
 
-    UNKNOWN_ERROR = { -1, '未知异常 ' },
+    DB_PARAM_ERROR = { 40001, '数据库操作参数问题' },
+    DB_INIT_ERROR = { 40002, '数据库操作初始化异常' },
+    DB_CURSOR_ERROR = { 40003, '数据库获取游标失败' },
+
+    UNKNOWN_ERROR = { 99999, '未知异常 ' },
 }
 
 setmetatable(_M, { __index = errCode })

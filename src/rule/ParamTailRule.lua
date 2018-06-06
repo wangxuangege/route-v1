@@ -25,7 +25,7 @@ local BaseRule = require("rule.BaseRule")
 -- errMsg: 若规则无效，存放无效规则的详细原因
 --------------------------------------------------------------------------------------
 function _M:new(rulesStr, priority)
-    return BaseRule.build(self, CONSTANT.RULE_TYPE.PARAM_TAIL, rulesStr, priority, _M)
+    return BaseRule:build(CONSTANT.RULE_TYPE.PARAM_TAIL, rulesStr, priority, _M)
 end
 
 --------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ end
 -- @return 拷贝的结果，这样拷贝后的对象就能够方法调用
 --------------------------------------------------------------------------------------
 function _M:copy(rule)
-    return RouteUtil.copyClass(self, rule, _M)
+    return RouteUtil:copyClass(rule, _M)
 end
 
 --------------------------------------------------------------------------------------

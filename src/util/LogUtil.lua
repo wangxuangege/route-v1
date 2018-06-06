@@ -3,6 +3,9 @@
     1）若是运行在ngx上面，那么直接使用ngx.log进行输出
     2）若运行在本地上面，那么在控制台输出日志内容
 ]]--
+
+module (..., package.seeall)
+
 local _M = {
     _VERSION = "0.0.1"
 }

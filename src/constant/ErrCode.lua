@@ -1,6 +1,8 @@
 --[[
     全局错误码
 ]]--
+module (..., package.seeall)
+
 local _M = {
     _VERSION = '0.0.1'
 }

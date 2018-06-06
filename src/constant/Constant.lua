@@ -1,3 +1,5 @@
+module (..., package.seeall)
+
 return {
 
     -- 路由规则类型

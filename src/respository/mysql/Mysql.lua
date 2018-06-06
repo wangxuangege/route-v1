@@ -1,6 +1,8 @@
 --[[
     封装mysql数据库的操作
 ]]--
+module (..., package.seeall)
+
 local _M = {
     _VERSION = "0.0.1"
 }

@@ -1,6 +1,8 @@
 --[[
     全局配置文件
 ]]--
+module (..., package.seeall)
+
 return {
 
     -- 日志级别

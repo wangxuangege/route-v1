@@ -57,9 +57,14 @@ local function callback(ngx, errInfo, ret)
         result.code = errInfo[1]
         result.msg = ret
     end
+
     if ngx and ngx.__TEST__ then
         log:info(string.toJSONString(result))
+        return
     end
+
+    ngx.say(string.toJSONString(result))
+    ngx.exit(200)
 end
 
 --------------------------------------------------------------------------------------
@@ -104,11 +109,4 @@ local function admin(ngx)
 end
 
 -- 执行入口方法
-admin({
-    __TEST__ = {
-        requestParams = {
-            command = 'QUERY',
-            type = 'ALL',
-        }
-    }
-})
+admin(ngx)

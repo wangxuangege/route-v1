@@ -69,6 +69,7 @@
                                    id="dataTable">
                                 <thead>
                                 <tr>
+                                    <th>规则主键</th>
                                     <th>规则类型</th>
                                     <th>规则字符串</th>
                                     <th>优先级</th>
@@ -95,6 +96,9 @@
 <script src="vendor/datatables-responsive/dataTables.responsive.js"></script>
 <script src="dist/js/sb-admin-2.js"></script>
 <script src="dist/js/admin.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/css/bootstrap-dialog.min.css"
+      rel="stylesheet" type="text/css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
 <script>
     /**
      * 删除规则
@@ -102,7 +106,23 @@
      * @param id
      */
     function deleteRule(id) {
-        alert(id);
+        BootstrapDialog.show({
+            title: '警告',
+            message: '请确认是否要删除规则[' + id + ']?',
+            buttons: [{
+                label: '确认',
+                action: function (dialog) {
+                    $.post(ADMIN_URL, {command: 'DELETE', id: id}, function (result) {
+
+                    });
+                }
+            }, {
+                label: '取消',
+                action: function (dialog) {
+                    dialog.close();
+                }
+            }]
+        });
     }
 
     /**
@@ -114,33 +134,37 @@
             responsive: true,
             ajax: ADMIN_URL + "?command=QUERY&type=ALL",
             select: true,
-            columns: [
-                {
-                    data: "RULE_TYPE",
-                    render: function (data, type, row) {
-                        return data == 'IP_RANGE'
-                            ? 'IP区间规则'
-                            : (data == 'PARAM_TAIL'
-                                ? '参数尾匹配规则'
-                                : data)
-                    }
-                },
-                {"data": "RULES_STR"},
-                {"data": "PRIORITY"},
-                {
-                    "data": "STATUS",
-                    render: function (data, type, row) {
-                        return data == 'OPEN' ? '有效' : '无效';
-                    }
-                },
-                {"data": "CREATE_TIME"},
-                {
-                    "data": "ID",
-                    render: function (data, type, row) {
-                        return '<button type="button" class="btn btn-outline btn-primary btn-xs" onclick="deleteRule(' + data + ')">删除</button>';
-                    }
+            columns: [{
+                data: 'ID',
+                render: function (data, type, row) {
+                    return "规则[" + data + "]";
                 }
-            ],
+            }, {
+                data: "RULE_TYPE",
+                render: function (data, type, row) {
+                    return data == 'IP_RANGE'
+                        ? 'IP区间规则'
+                        : (data == 'PARAM_TAIL'
+                            ? '参数尾匹配规则'
+                            : data)
+                }
+            }, {
+                data: "RULES_STR"
+            }, {
+                data: "PRIORITY"
+            }, {
+                data: "STATUS",
+                render: function (data, type, row) {
+                    return data == 'OPEN' ? '有效' : '无效';
+                }
+            }, {
+                data: "CREATE_TIME"
+            }, {
+                data: "*",
+                render: function (data, type, row) {
+                    return '<button type="button" class="btn btn-outline btn-primary btn-xs" onclick="deleteRule(' + row.ID + ')">删除</button>';
+                }
+            }],
             language: {
                 "info": "当前显示 _START_ - _END_ 条记录 共 _TOTAL_ 条记录",
                 "search": "查询",

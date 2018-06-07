@@ -95,30 +95,11 @@
 <script src="dist/js/sb-admin-2.js"></script>
 <script src="dist/js/admin.js"></script>
 <script>
-    /**
-     * 初始化表单数据
-     * @param data
-     */
-    function initTableData(data) {
-        var buffer = new StringBuffer();
-        data.forEach(function (e) {
-            buffer.append('<tr class="even gradeC">');
-            buffer.append('<td>' + e.rule_type + '</td>');
-            buffer.append('<td>' + e.rules_str + '</td>');
-            buffer.append('<td>' + e.priority + '</td>');
-            buffer.append('<td>' + e.status + '</td>');
-            buffer.append('<td>' + e.create_time + '</td>');
-            buffer.append('</tr>');
-        });
-        $('#tbody').html(buffer.toString());
-    }
-
     $(document).ready(function () {
-        // 加载规则数据
-        loadRouteRules(initTableData);
         // 初始化表单
         $('#dataTable').DataTable({
             responsive: true,
+            ajax: ADMIN_URL + "?command=QUERY&type=ALL",
             language: {
                 "info": "当前显示 _START_ - _END_ 条记录 共 _TOTAL_ 条记录",
                 "search": "查询",

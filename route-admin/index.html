@@ -100,6 +100,8 @@
       rel="stylesheet" type="text/css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
 <script>
+    var dataTable = undefined;
+
     /**
      * 删除规则
      *
@@ -111,9 +113,36 @@
             message: '请确认是否要删除规则[' + id + ']?',
             buttons: [{
                 label: '确认',
+                cssClass: 'btn-warning',
                 action: function (dialog) {
                     $.post(ADMIN_URL, {command: 'DELETE', id: id}, function (result) {
-
+                        dialog.close();
+                        if (result.success) {
+                            dataTable.ajax.reload(null, false);
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_SUCCESS,
+                                title: '成功',
+                                message: '删除规则[' + id + ']成功',
+                                buttons: [{
+                                    label: '关闭',
+                                    action: function (dialogItself) {
+                                        dialogItself.close();
+                                    }
+                                }]
+                            });
+                        } else {
+                            BootstrapDialog.show({
+                                type: BootstrapDialog.TYPE_DANGER,
+                                title: '错误',
+                                message: result.msg + '[' + result.code + ']',
+                                buttons: [{
+                                    label: '关闭',
+                                    action: function (dialogItself) {
+                                        dialogItself.close();
+                                    }
+                                }]
+                            });
+                        }
                     });
                 }
             }, {
@@ -130,7 +159,7 @@
      */
     $(document).ready(function () {
         // 初始化表单
-        $('#dataTable').DataTable({
+        dataTable = $('#dataTable').DataTable({
             responsive: true,
             ajax: ADMIN_URL + "?command=QUERY&type=ALL",
             select: true,

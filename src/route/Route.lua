@@ -3,6 +3,7 @@
 ]]--
 local LogUtil = require("util.LogUtil")
 local CONFIG = require("constant.Config")
+local CONSTANT = require("constant.Constant")
 local ERR_CODE = require("constant.ErrCode")
 local RouteContext = require("route.RouteContext")
 local Mysql = require("respository.mysql.Mysql")
@@ -23,22 +24,12 @@ local function handleRet(ngx, upstream)
 end
 
 --------------------------------------------------------------------------------------
--- 所有允许的规则类型
---------------------------------------------------------------------------------------
-local function allowRules()
-    return {
-        IP_RANGE = require("rule.IpRangeRule"),
-        PARAM_TAIL = require("rule.ParamTailRule")
-    }
-end
-
---------------------------------------------------------------------------------------
 -- 查询所有规则
 -- @return code detail
 --------------------------------------------------------------------------------------
 local function queryAllRules()
     -- 允许的规则类型
-    local ruleTypes = allowRules()
+    local ruleTypes = CONSTANT.RULE_CLASS_MAP
     if not next(ruleTypes) then
         return {}
     end

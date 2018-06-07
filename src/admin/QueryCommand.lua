@@ -27,7 +27,7 @@ function invoke(requestParams)
 
     local mysql = Mysql:create()
     local code, detail = mysql:query(
-            string.format("select * from route_rule " .. where))
+            string.format("select * from route_rule " .. where), true)
 
     if code ~= ERR_CODE.SUCCESS then
         log:warn("查询失败，错误原因：", detail)

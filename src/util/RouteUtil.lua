@@ -49,3 +49,51 @@ function copyClass(self, data, func)
         return data[key] or func[key]
     end })
 end
+
+--------------------------------------------------------------------------------------
+-- 拷贝数据部分
+-- @param origin 目标对象
+-- @param option 拷贝选项
+-- 1）option为boolean类型时候，option=true 表示key大写，false表示小写
+--------------------------------------------------------------------------------------
+function copyData(origin, option)
+    if type(origin) ~= 'table' then
+        return origin
+    end
+
+    local result = {}
+
+    -- option=nil时候不做处理，直接拷贝
+    if option == nil then
+        for k, v in pairs(origin) do
+            if type(k) ~= 'table' and type(v) ~= 'table' then
+                result[k] = v
+            end
+        end
+    end
+
+    -- boolean类型时候大小写处理
+    if type(option) == 'boolean' then
+        for k, v in pairs(origin) do
+            if type(k) ~= 'table' and type(v) ~= 'table' then
+                result[option and string.upper(k) or string.lower(k)] = v
+            end
+        end
+    end
+
+    -- table类型时候，做映射处理
+    if type(option) == 'table' then
+        -- 做映射时候，忽略大小写
+        local mappings = copyData(option, true)
+        for k, v in pairs(origin) do
+            if type(k) ~= 'table' and type(v) ~= 'table' then
+                local mapping = mappings[string.upper(k)]
+                if mapping ~= nil and type(mapping) ~= 'table' then
+                    result[mapping] = v
+                end
+            end
+        end
+    end
+
+    return result
+end

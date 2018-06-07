@@ -100,6 +100,13 @@
         $('#dataTable').DataTable({
             responsive: true,
             ajax: ADMIN_URL + "?command=QUERY&type=ALL",
+            columns: [
+                { "data": "rule_type" },
+                { "data": "rules_str" },
+                { "data": "priority" },
+                { "data": "status" },
+                { "data": "create_time" },
+            ],
             language: {
                 "info": "当前显示 _START_ - _END_ 条记录 共 _TOTAL_ 条记录",
                 "search": "查询",

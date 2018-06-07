@@ -10,6 +10,7 @@ local CONFIG = require("constant.Config")
 local LogUtil = require("util.LogUtil")
 local ERR_CODE = require("constant.ErrCode")
 local StringUtil = require("util.StringUtil")
+local RouteUtil = require("util.RouteUtil")
 
 local log = LogUtil:new("MYSQL")
 
@@ -69,11 +70,12 @@ end
 --------------------------------------------------------------------------------------
 -- 数据库查询
 -- @param 查询sql
+-- @param 查询结果映射
 -- @return code detail
 -- 1) 若数据库查询成功，detail为查询的结果
 -- 2) 若数据库查询失败，detail为失败的原因
 --------------------------------------------------------------------------------------
-function _M:query(sql)
+function _M:query(sql, option)
     if not self.available then
         return ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
     end
@@ -95,7 +97,7 @@ function _M:query(sql)
     else
         local result = {}
         while row do
-            table.insert(result, row)
+            table.insert(result, RouteUtil.copyData(row, option))
             row = cursor:fetch(row, "a")
         end
         return ERR_CODE.SUCCESS, result

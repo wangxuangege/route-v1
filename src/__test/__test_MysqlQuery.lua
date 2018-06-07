@@ -7,7 +7,9 @@ local log = LogUtil:new("测试DB查询")
 
 local mysql = Mysql:create()
 
-local code, detail = mysql:query("select * from route_rule")
+local code, detail = mysql:query("select * from route_rule", {
+    rule_type = "RULE_TYPE", status = "STATUS", ID = "RULE_ID"
+})
 if code ~= ERR_CODE.SUCCESS then
     log:warn("查询失败，错误码:", code[1], "，错误原因：", detail)
 else

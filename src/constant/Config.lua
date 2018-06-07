@@ -19,7 +19,7 @@ return {
     ALLOW_RULE_SIZE = 30,
 
     -- mysql配置
-    MYSQL_ADDRESS = "192.168.171.131",
+    MYSQL_ADDRESS = "192.168.195.128",
     MYSQL_DB = "route",
     MYSQL_USER = "root",
     MYSQL_PWD = "root",

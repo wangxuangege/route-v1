@@ -9,6 +9,7 @@ local StringUtil = require("util.StringUtil")
 local LogUtil = require("util.LogUtil")
 local ERR_CODE = require("constant.ErrCode")
 local NgxUtil = require("util.NgxUtil")
+local CONFIG = require("constant.Config")
 
 local log = LogUtil:new("ADMIN")
 

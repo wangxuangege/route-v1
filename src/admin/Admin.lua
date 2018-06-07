@@ -8,6 +8,7 @@
 local StringUtil = require("util.StringUtil")
 local LogUtil = require("util.LogUtil")
 local ERR_CODE = require("constant.ErrCode")
+local NgxUtil = require("util.NgxUtil")
 
 local log = LogUtil:new("ADMIN")
 
@@ -19,96 +20,83 @@ local COMMANDS = {
 }
 
 --------------------------------------------------------------------------------------
--- 获取请求参数中的值
---------------------------------------------------------------------------------------
-local function getRequestParams(ngx)
-    if not ngx then
-        return {}
-    end
-
-    if ngx and ngx.__TEST__ then
-        return ngx.__TEST__.requestParams or {}
-    end
-
-    local requestMethod = ngx.var.request_method
-    if "GET" == requestMethod then
-        return ngx.req.get_uri_args()
-    elseif "POST" == requestMethod then
-        ngx.req.read_body()
-        return ngx.req.get_post_args()
-    end
-
-    return {}
-end
-
---------------------------------------------------------------------------------------
 -- 操作完成，响应结果
 -- 若运行在ngx上面，那么填充response，若运行在本地，直接输出日志即可
 --------------------------------------------------------------------------------------
-local function response(ngx, code, detail)
-    local result = {}
+local function writeResponse(ngx, code, detail)
+    local result = nil
     if code == ERR_CODE.SUCCESS then
-        result.success = true
-        result.code = code[1]
-        result.msg = code[2]
-        result.data = detail
+        result = { success = true, code = code[1], msg = code[2], data = detail }
     else
-        result.success = false
-        result.code = code[1]
-        result.msg = detail
+        result = { success = false, code = code[1], msg = detail or code[2] }
     end
 
-    if ngx and ngx.__TEST__ then
-        log:info(StringUtil.toJSONString(result))
+    if not ngx or ngx.__TEST__ then
+        log:info("执行结果：", StringUtil.toJSONString(result))
         return
     end
 
-    if ngx then
-        ngx.say(StringUtil.toJSONString(result))
-        ngx.exit(200)
-    end
+    ngx.say(StringUtil.toJSONString(result))
+    ngx.exit(200)
+    return
 end
 
 --------------------------------------------------------------------------------------
--- 入口方法
+-- 处理命令入口方法
 -- 1. 解析请求命令
 -- 2. 判断参数是否合法
 -- 3. 执行业务动作
--- 4. 反馈结果
+-- @param ngx
+-- @return code detail
 --------------------------------------------------------------------------------------
-local function admin(ngx)
-    local requestParams = getRequestParams(ngx)
+local function handle(requestParams)
     local command = requestParams['command']
-
     if StringUtil.isEmpty(command) then
-        response(ngx, ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不能为空')
-        return
+        return ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不能为空'
     end
 
     local commandInvoker = COMMANDS[command]
     if not commandInvoker then
-        response(ngx, ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不存在')
-        return
+        return ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不存在'
     end
 
     if type(commandInvoker.invoke) ~= 'function' then
-        response(ngx, ERR_CODE.ADMIN_INNER_ERROR, '命令执行器没有找到执行模块')
-        return
+        return ERR_CODE.ADMIN_INNER_ERROR, '命令执行器没有找到执行模块'
     end
 
     -- 详细校验参数
     if type(commandInvoker.checkParams) == 'function' then
         local code, detail = commandInvoker.checkParams(requestParams)
         if code ~= ERR_CODE.SUCCESS then
-            response(ngx, code, detail)
-            return
+            return code, detail
         end
     end
 
     -- 执行命令
-    local code, detail = commandInvoker.invoke(requestParams)
-    response(ngx, code, detail)
+    return commandInvoker.invoke(requestParams)
 end
 
--- 执行入口方法
-admin(ngx)
+--------------------------------------------------------------------------------------
+-- 命令
+-- @param ngx
+-- @return
+--------------------------------------------------------------------------------------
+local function admin(ngx)
+    -- 获取ngx请求参数
+    local requestParams = NgxUtil.getRequestParams(ngx)
+    -- 执行业务逻辑
+    local code, detail = handle(requestParams)
+    -- 输出结果
+    writeResponse(ngx, code, detail)
+end
+
+if CONFIG.DEBUG then
+    -- DEBUG模式下面直接抛出异常
+    admin(ngx)
+else
+    -- 保守执行命令
+    if not pcall(admin, ngx) then
+        log:error("命令执行异常")
+        writeResponse(ngx, ERR_CODE.UNKNOWN_ERROR, "执行命令出现系统未定义异常")
+    end
+end

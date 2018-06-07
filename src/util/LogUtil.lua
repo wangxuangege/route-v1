@@ -4,7 +4,7 @@
     2）若运行在本地上面，那么在控制台输出日志内容
 ]]--
 
-module (..., package.seeall)
+module(..., package.seeall)
 
 local _M = {
     _VERSION = "0.0.1"

@@ -7,7 +7,7 @@ local LogUtil = require("util.LogUtil")
 local log = LogUtil:new("测试参数尾规则")
 
 local paramTailRule = ParamTailRule:new("mid~3~upstream2,000,001,5DD,003,444,007|instMid~5~upstream4,12345,67890", 100)
-local context = RouteContext:new({
+local context = RouteContext:build({
     __TEST__ = {
         requestParams = {
             mid = "ABCDEF999000444",

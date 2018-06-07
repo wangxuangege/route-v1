@@ -1,14 +1,7 @@
 --[[
-    路由上下文对象
+    ngx相关的一些抽取方法
 ]]--
-module (..., package.seeall)
-
-local _M = {
-    _VERSION = "0.0.1"
-}
-
-require("util.StringUtil")
-local RouteUtil = require("util.RouteUtil")
+module(..., package.seeall);
 
 --------------------------------------------------------------------------------------
 -- 获取ngx的IP
@@ -17,7 +10,11 @@ local RouteUtil = require("util.RouteUtil")
 -- proxy_set_header X-Real-IP $remote_addr;
 -- proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 --------------------------------------------------------------------------------------
-local function getNgxIP(ngx)
+function getNgxIP(ngx)
+    if not ngx then
+        return -1
+    end
+
     if ngx.__TEST__ then
         return ngx.__TEST__.ip
     end
@@ -29,7 +26,11 @@ end
 --------------------------------------------------------------------------------------
 -- 获取ngx的request_uri
 --------------------------------------------------------------------------------------
-local function getNgxRequestUri(ngx)
+function getNgxRequestUri(ngx)
+    if not ngx then
+        return ''
+    end
+
     if ngx.__TEST__ then
         return ngx.__TEST__.requestUri
     end
@@ -42,7 +43,7 @@ end
 -- @param ngx ngx对象
 -- @return
 --------------------------------------------------------------------------------------
-local function getRequestParams(ngx)
+function getRequestParams(ngx)
     if not ngx then
         return {}
     end
@@ -51,27 +52,13 @@ local function getRequestParams(ngx)
         return ngx.__TEST__.requestParams or {}
     end
 
+    local requestMethod = ngx.var.request_method
+    if "GET" == requestMethod then
+        return ngx.req.get_uri_args()
+    elseif "POST" == requestMethod then
+        ngx.req.read_body()
+        return ngx.req.get_post_args()
+    end
+
     return {}
 end
-
---------------------------------------------------------------------------------------
--- 构造路由上下文对象
--- @param ngx对象
--- 对象属性包括：
--- ip: IP地址
--- intIp: IP地址转换成的整数
--- requestUri: 请求uri
--- requestParams: 请求参数
---------------------------------------------------------------------------------------
-function _M:new(ngx)
-    self = {}
-
-    self.ip = getNgxIP(ngx)
-    self.longIP = RouteUtil.ip2Long(self.ip)
-    self.requestUri = getNgxRequestUri(ngx)
-    self.requestParams = getRequestParams(ngx)
-
-    return setmetatable(self, { __index = _M })
-end
-
-return _M

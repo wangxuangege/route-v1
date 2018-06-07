@@ -39,7 +39,7 @@ function invoke(requestParams)
     end
     local num = 0
     if next(detail) then
-        num = tonumber(detail[0]['NUM'])
+        num = tonumber(detail[1]['NUM'])
         if num and num >= Config.ALLOW_RULE_SIZE then
             return ERR_CODE.ADMIN_BUSINESS_LIMIT, '路由限制规则最多只允许' + Config.ALLOW_RULE_SIZE + '条规则'
         end

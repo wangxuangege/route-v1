@@ -74,6 +74,7 @@
                                     <th>优先级</th>
                                     <th>状态</th>
                                     <th>创建时间</th>
+                                    <th>操作</th>
                                 </tr>
                                 </thead>
                                 <tbody id="tbody">
@@ -95,23 +96,56 @@
 <script src="dist/js/sb-admin-2.js"></script>
 <script src="dist/js/admin.js"></script>
 <script>
+    /**
+     * 删除规则
+     *
+     * @param id
+     */
+    function deleteRule(id) {
+        alert(id);
+    }
+
+    /**
+     * 加载所有规则
+     */
     $(document).ready(function () {
         // 初始化表单
         $('#dataTable').DataTable({
             responsive: true,
             ajax: ADMIN_URL + "?command=QUERY&type=ALL",
+            select: true,
             columns: [
-                { "data": "RULE_TYPE" },
-                { "data": "RULES_STR" },
-                { "data": "PRIORITY" },
-                { "data": "STATUS" },
-                { "data": "CREATE_TIME" },
+                {
+                    data: "RULE_TYPE",
+                    render: function (data, type, row) {
+                        return data == 'IP_RANGE'
+                            ? 'IP区间规则'
+                            : (data == 'PARAM_TAIL'
+                                ? '参数尾匹配规则'
+                                : data)
+                    }
+                },
+                {"data": "RULES_STR"},
+                {"data": "PRIORITY"},
+                {
+                    "data": "STATUS",
+                    render: function (data, type, row) {
+                        return data == 'OPEN' ? '有效' : '无效';
+                    }
+                },
+                {"data": "CREATE_TIME"},
+                {
+                    "data": "ID",
+                    render: function (data, type, row) {
+                        return '<button type="button" class="btn btn-outline btn-primary btn-xs" onclick="deleteRule(' + data + ')">删除</button>';
+                    }
+                }
             ],
             language: {
                 "info": "当前显示 _START_ - _END_ 条记录 共 _TOTAL_ 条记录",
                 "search": "查询",
                 "sProcessing": "查询中...",
-                "sLoadingRecords": "记载中...",
+                "sLoadingRecords": "加载中...",
                 "sLengthMenu": "每页 _MENU_ 条记录",
                 "sZeroRecords": "没有任何规则",
                 "sInfoEmpty": "",

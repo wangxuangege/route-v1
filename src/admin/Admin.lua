@@ -15,7 +15,7 @@ local log = LogUtil:new("ADMIN")
 
 -- 支持的操作命令
 local COMMANDS = {
-    ADD = require("admin.QueryCommand"),
+    ADD = require("admin.AddCommand"),
     DELETE = require("admin.DeleteCommand"),
     QUERY = require("admin.QueryCommand")
 }

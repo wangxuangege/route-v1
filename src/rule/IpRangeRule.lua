@@ -35,28 +35,28 @@ end
 --------------------------------------------------------------------------------------
 -- 获取路由upstream
 -- @param context 路由上下文对象
--- @return
--- 1) 首先判断规则是否有效，若规则无效，则返回false, errInfo, errMsg
--- 2) 若路由计算成功，返回true, upstream, rule
+-- @return code, detail
+-- 1) 首先判断规则是否有效，若规则无效，则detail1为错误原因
+-- 2) 若路由计算成功，则detail为计算出来的结果，{ upstream = $upstream, rule = $rule }
 --------------------------------------------------------------------------------------
 function _M:getUpstream(context)
     if not self.effective then
-        return false, ERR_CODE.RULE_UN_EFFECTIVE, '规则无效，计算路由失败'
+        return ERR_CODE.RULE_UN_EFFECTIVE, '规则无效，计算路由失败'
     end
 
     if not context.longIP or context.longIP < 0 then
-        return false, ERR_CODE.CONTEXT_UNDEFINE_PARAM, '路由上下文中获取IP非法，计算路由失败'
+        return ERR_CODE.CONTEXT_UNDEFINE_PARAM, '路由上下文中获取IP非法，计算路由失败'
     end
 
     for _, rule in pairs(self.rules) do
         local range, upstream = rule.range, rule.upstream
         local from, to = range.from, range.to
         if from <= context.longIP and context.longIP <= to then
-            return true, upstream, rule
+            return ERR_CODE.SUCCESS, { upstream = upstream, rule = rule }
         end
     end
 
-    return false, ERR_CODE.RULE_UN_HIT, '没有命中任何规则'
+    return ERR_CODE.RULE_UN_HIT, '没有命中任何规则'
 end
 
 --------------------------------------------------------------------------------------
@@ -64,35 +64,35 @@ end
 -- @param rulesStr规则数组
 -- 1) rulesStr格式为from1~to1,upstream1|from2~to2,upstream2|......
 -- 2) 转换为{range = { from = from, to = $to}, upstream = '@upstream'}每条格式后，然后校验IP规则是否有效
--- @return 解析结果
--- 1) 若不符合格式，则返回{false, err_info, err_msg}，其中err_info格式为{err_code, err_msg}
--- 2) 若符合格式，则返回{true}
+-- @return code detail
+-- 1) 若不符合格式，detail为错误详细原因
+-- 2) 若符合格式，detail为解析出来的规则
 --------------------------------------------------------------------------------------
 function _M.parse(rulesStr)
     if StringUtil.isEmpty(rulesStr) then
-        return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则不能为空'
+        return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则不能为空'
     end
 
     -- 解析规则
     local ruleStrArray = StringUtil.split(rulesStr, "|")
     if not next(ruleStrArray) then
-        return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则不能为空'
+        return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则不能为空'
     end
 
     local result = {}
     for _, ruleStr in pairs(ruleStrArray) do
         if StringUtil.isEmpty(ruleStr) then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则存在空的子规则'
+            return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则存在空的子规则'
         end
 
         local ipSplitPos, _ = string.find(ruleStr, '~')
         if not ipSplitPos then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
+            return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
         end
 
         local upstreamSplitPos, _ = string.find(ruleStr, ',', ipSplitPos)
         if not upstreamSplitPos then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
+            return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
         end
 
         -- 解析IP地址，IP地址可以是整形也可以是标准形
@@ -112,17 +112,17 @@ function _M.parse(rulesStr)
 
         local upstream = string.sub(ruleStr, upstreamSplitPos + 1)
         if not from or not to or from == -1 or to == -1 or StringUtil.isEmpty(upstream) then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
+            return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由子规则格式不正确'
         end
         table.insert(result, { range = { from = from, to = to }, upstream = upstream })
     end
 
     -- 校验规则
-    local ret, info, msg = _M.check(result)
-    if ret then
-        return true, result
+    local code, detail = _M.check(result)
+    if code == ERR_CODE.SUCCESS then
+        return ERR_CODE.SUCCESS, result
     end
-    return ret, info, msg
+    return code, detail
 end
 
 --------------------------------------------------------------------------------------
@@ -131,13 +131,13 @@ end
 -- 1) 每一个数组项为table，{range = { from = from, to = $to}, upstream = '@upstream'}
 -- 2) start、end为IP转换的整形表示，且to必须大于from
 -- 3) upstream为不空
--- @return 规则是否符合规范
--- 1) 若不符合格式，则返回false, err_info, err_msg，其中err_info格式为{err_code, err_msg}
--- 2) 若符合格式，则返回true
+-- @return code detail
+-- 1) 若不符合格式，detail为错误详细原因
+-- 2) 若符合格式
 --------------------------------------------------------------------------------------
 function _M.check(rules)
     if not next(rules) then
-        return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则不能为空'
+        return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则不能为空'
     end
 
     table.sort(rules, function(left, right)
@@ -150,20 +150,20 @@ function _M.check(rules)
         local from, to = range['from'], range['to']
 
         if StringUtil.isEmpty(upstream) then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则，upstream不能为空，且必须是字符串'
+            return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则，upstream不能为空，且必须是字符串'
         end
         if from > to then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则，from必须小于to'
+            return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则，from必须小于to'
         end
 
         if lastToIP and from <= lastToIP then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则，不能存在重叠区间'
+            return ERR_CODE.RULE_FORMAT_ERROR, 'IP路由规则，不能存在重叠区间'
         end
 
         lastToIP = to
     end
 
-    return true
+    return ERR_CODE.SUCCESS
 end
 
 return _M

@@ -4,6 +4,8 @@
 
 module(..., package.seeall);
 
+local ERR_CODE = require("constant.ErrCode")
+
 --------------------------------------------------------------------------------------
 -- 路由规则构造方法
 -- @param self 需要构造的对象
@@ -34,13 +36,14 @@ function build(self, ruleType, rulesStr, priority, func)
         self.priority = 1
     end
 
-    local effective, info, msg = func.parse(rulesStr)
-    self.effective = effective
-    if (self.effective) then
-        self.rules = info
+    local code, detail = func.parse(rulesStr)
+    if code == ERR_CODE.SUCCESS then
+        self.effective = true
+        self.rules = detail
     else
-        self.errInfo = info
-        self.errMsg = msg
+        self.effective = false
+        self.errInfo = code
+        self.errMsg = detail
         self.priority = 0
     end
 

@@ -45,17 +45,17 @@ end
 -- 操作完成，响应结果
 -- 若运行在ngx上面，那么填充response，若运行在本地，直接输出日志即可
 --------------------------------------------------------------------------------------
-local function callback(ngx, errInfo, ret)
+local function response(ngx, code, detail)
     local result = {}
-    if errInfo == ERR_CODE.SUCCESS then
+    if code == ERR_CODE.SUCCESS then
         result.success = true
-        result.code = errInfo[1]
-        result.msg = errInfo[2]
-        result.data = ret
+        result.code = code[1]
+        result.msg = code[2]
+        result.data = detail
     else
         result.success = false
-        result.code = errInfo[1]
-        result.msg = ret
+        result.code = code[1]
+        result.msg = detail
     end
 
     if ngx and ngx.__TEST__ then
@@ -81,33 +81,33 @@ local function admin(ngx)
     local command = requestParams['command']
 
     if StringUtil.isEmpty(command) then
-        callback(ngx, ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不能为空')
+        response(ngx, ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不能为空')
         return
     end
 
     local commandInvoker = COMMANDS[command]
     if not commandInvoker then
-        callback(ngx, ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不存在')
+        response(ngx, ERR_CODE.ADMIN_PARAM_ERROR, '操作命令不存在')
         return
     end
 
     if type(commandInvoker.invoke) ~= 'function' then
-        callback(ngx, ERR_CODE.ADMIN_INNER_ERROR, '命令执行器没有找到执行模块')
+        response(ngx, ERR_CODE.ADMIN_INNER_ERROR, '命令执行器没有找到执行模块')
         return
     end
 
     -- 详细校验参数
     if type(commandInvoker.checkParams) == 'function' then
-        local info, errMsg = commandInvoker.checkParams(requestParams)
-        if info ~= ERR_CODE.SUCCESS then
-            callback(ngx, info, errMsg)
+        local code, detail = commandInvoker.checkParams(requestParams)
+        if code ~= ERR_CODE.SUCCESS then
+            response(ngx, code, detail)
             return
         end
     end
 
     -- 执行命令
-    local errInfo, ret = commandInvoker.invoke(requestParams)
-    callback(ngx, errInfo, ret)
+    local code, detail = commandInvoker.invoke(requestParams)
+    response(ngx, code, detail)
 end
 
 -- 执行入口方法

@@ -69,49 +69,49 @@ end
 --------------------------------------------------------------------------------------
 -- 数据库查询
 -- @param 查询sql
--- @return
--- 1) 若数据库查询成功，返回true, rows
--- 2) 若数据库查询失败，返回false，errInfo, errMsg
+-- @return code detail
+-- 1) 若数据库查询成功，detail为查询的结果
+-- 2) 若数据库查询失败，detail为失败的原因
 --------------------------------------------------------------------------------------
 function _M:query(sql)
     if not self.available then
-        return false, ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
+        return ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
     end
 
     if StringUtil.isEmpty(sql) then
-        return false, ERR_CODE.DB_PARAM_ERROR, '数据库查询sql不能为空'
+        return ERR_CODE.DB_PARAM_ERROR, '数据库查询sql不能为空'
     end
 
     local cursor, errorString = self.connect:execute(sql)
     if nil ~= errorString then
         log:error("数据库查询失败")
-        return false, ERR_CODE.DB_CURSOR_ERROR, '数据库查询失败'
+        return ERR_CODE.DB_CURSOR_ERROR, '数据库查询失败'
     end
 
     local row = cursor:fetch({}, "a")
     if -1 == row then
         -- 数据库查询记录为空
-        return true, {}
+        return ERR_CODE.SUCCESS, {}
     else
         local result = {}
         while row do
             table.insert(result, row)
             row = cursor:fetch(row, "a")
         end
-        return true, result
+        return ERR_CODE.SUCCESS, result
     end
 end
 
 --------------------------------------------------------------------------------------
 -- 数据库增删改
 -- @param 增删改的sql
--- @return
--- 1) 若数据库查询成功，返回true
--- 2) 若数据库查询失败，返回false，errInfo, errMsg
+-- @return code detail
+-- 1) 若数据库查询成功
+-- 2) 若数据库查询失败，detail为失败的原因
 --------------------------------------------------------------------------------------
 function _M:execute(sql)
     if not self.available then
-        return false, ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
+        return  ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
     end
 
     if StringUtil.isEmpty(sql) then
@@ -121,10 +121,10 @@ function _M:execute(sql)
     local cursor, errorString = self.connect:execute(sql)
     if nil ~= errorString then
         log:error("数据库操作失败")
-        return false, ERR_CODE.DB_CURSOR_ERROR, '数据库操作失败'
+        return ERR_CODE.DB_CURSOR_ERROR, '数据库操作失败'
     end
 
-    return true
+    return ERR_CODE.SUCCESS
 end
 
 return _M

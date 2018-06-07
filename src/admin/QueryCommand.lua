@@ -26,14 +26,14 @@ function invoke(requestParams)
     end
 
     local mysql = Mysql:create()
-    local flag, info, msg = mysql:query(
+    local code, detail = mysql:query(
             string.format("select * from route_rule " .. where))
 
-    if not flag then
-        log:warn("查询失败，错误原因：", msg, "，错误info:", StringUtil.toJSONString(info))
-        return info, "数据库查询失败"
+    if code ~= ERR_CODE.SUCCESS then
+        log:warn("查询失败，错误原因：", detail)
+        return code, "数据库查询失败"
     else
-        return ERR_CODE.SUCCESS, info
+        return ERR_CODE.SUCCESS, detail
     end
 
 end

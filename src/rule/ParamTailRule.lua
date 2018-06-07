@@ -1,7 +1,7 @@
 --[[
     请求参数末尾匹配规则
 ]]--
-module (..., package.seeall)
+module(..., package.seeall)
 
 local _M = {
     _VERSION = "0.0.1"
@@ -42,13 +42,13 @@ end
 --------------------------------------------------------------------------------------
 -- 获取路由upstream
 -- @param context 路由上下文对象
--- @return
--- 1) 首先判断规则是否有效，若规则无效，则返回false, errInfo, errMsg
--- 2) 若路由计算成功，返回true, upstream, rule
+-- @return code detail
+-- 1) 首先判断规则是否有效，若规则无效，则detail为详细错误信息
+-- 2) 若路由计算成功，则detail为计算出来的结果，{ upstream = $upstream, rule = $rule }
 --------------------------------------------------------------------------------------
 function _M:getUpstream(context)
     if not self.effective then
-        return false, ERR_CODE.RULE_UN_EFFECTIVE, '规则无效，计算路由失败'
+        return ERR_CODE.RULE_UN_EFFECTIVE, '规则无效，计算路由失败'
     end
 
     local requestParams = context.requestParams
@@ -60,13 +60,13 @@ function _M:getUpstream(context)
         if not StringUtil.isEmpty(paramValue) and #paramValue >= length then
             local tailValue = string.sub(paramValue, #paramValue - length + 1)
             if ArrayUtil.contain(tails, tailValue) then
-                return true, upstream, rule
+                return ERR_CODE.SUCCESS, { upstream = upstream, rule = rule }
             end
         end
 
     end
 
-    return false, ERR_CODE.RULE_UN_HIT, '没有命中任何规则'
+    return ERR_CODE.RULE_UN_HIT, '没有命中任何规则'
 end
 
 --------------------------------------------------------------------------------------
@@ -75,43 +75,43 @@ end
 -- 1) rulesStr格式为paramKey~length~upstream,tail1,tail2,tail3......|paramKey~length~upstream,tail1,tail2,tail3...
 -- 2) 每一个子规则对应的tail1,tail2,tail3...必须长度为length，需要保证length+upstream必须唯一，不允许配置多余的规则
 -- 2) 转换为{paramKey = $paramKey, length = $length, upstream = '@upstream', tails = {tail1, tail2, ...}}格式后，转换后需要校验规则是否有效
--- @return 解析结果
--- 1) 若不符合格式，则返回{false, err_info, err_msg}，其中err_info格式为{err_code, err_msg}
--- 2) 若符合格式，则返回{true}
+-- @return code detail
+-- 1) 若不符合格式，detail为错误详细原因
+-- 2) 若符合格式，detail为解析出来的规则
 --------------------------------------------------------------------------------------
 function _M.parse(rulesStr)
     if StringUtil.isEmpty(rulesStr) then
-        return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
+        return ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
     end
 
     -- 解析规则
     local ruleStrArray = StringUtil.split(rulesStr, "|")
     if not next(ruleStrArray) then
-        return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
+        return ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
     end
 
     local result = {}
     for _, ruleStr in pairs(ruleStrArray) do
         if StringUtil.isEmpty(ruleStr) then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则存在空的子规则'
+            return ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则存在空的子规则'
         end
 
         local strArray = StringUtil.split(ruleStr, ',')
         if not next(ruleStrArray) or #strArray < 2 then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
+            return ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
         end
 
         -- 第1个分割出来的一定是paramKey~length~upstream
         local splitArray = StringUtil.split(strArray[1], '~')
         if not next(ruleStrArray) then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
+            return ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配规则不能为空'
         end
 
         local paramKey = splitArray[1]
         local length = tonumber(splitArray[2])
         local upstream = splitArray[3]
         if StringUtil.isEmpty(paramKey) or not length or StringUtil.isEmpty(upstream) then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
+            return ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
         end
 
         -- 第2个开始，后面所有的都是tail尾
@@ -119,7 +119,7 @@ function _M.parse(rulesStr)
         for i = 2, #strArray do
             local tail = strArray[i]
             if StringUtil.isEmpty(tail) or #tail ~= length then
-                return false, ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
+                return ERR_CODE.RULE_FORMAT_ERROR, '参数末尾匹配子规则格式不正确'
             end
             table.insert(tails, tail)
         end
@@ -134,11 +134,11 @@ function _M.parse(rulesStr)
     end)
 
     -- 校验规则
-    local ret, info, msg = _M.check(result)
-    if ret then
-        return true, result
+    local code, detail = _M.check(result)
+    if code == ERR_CODE.SUCCESS then
+        return ERR_CODE.SUCCESS, result
     end
-    return ret, info, msg
+    return code, detail
 end
 
 --------------------------------------------------------------------------------------
@@ -147,13 +147,13 @@ end
 -- 1) 每一个数组项为table，{ upstream = $upstream, length = $length, tails = {tail1, tail2} }
 -- 2) tail长度必须为length，且不能重复，upstream+length组成的key，也不允许重复
 -- 3) upstream为不空，length为整数
--- @return 规则是否符合规范
--- 1) 若不符合格式，则返回false, err_info, err_msg，其中err_info格式为{err_code, err_msg}
--- 2) 若符合格式，则返回true
+-- @return code detail
+-- 1) 若不符合格式，detail为错误详细原因
+-- 2) 若符合格式
 --------------------------------------------------------------------------------------
 function _M.check(rules)
     if not next(rules) then
-        return false, ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则不能为空'
+        return ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则不能为空'
     end
 
     -- 用来限制upstream+length限制必须唯一
@@ -165,33 +165,33 @@ function _M.check(rules)
         local length, upstream, tails = rule['length'], rule['upstream'], rule['tails']
 
         if StringUtil.isEmpty(upstream) then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，upstream不能为空，且必须是字符串'
+            return ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，upstream不能为空，且必须是字符串'
         end
 
         if type(length) ~= 'number' then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，length必须为整数'
+            return ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，length必须为整数'
         end
 
-        local upstreamAndLength = upstream .. length
+        local upstreamAndLength = upstream .. "|" .. length
         if upstreamAndLengthSet[upstreamAndLength] then
-            return false, ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，upstream+length必须唯一'
+            return ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，upstream+length必须唯一'
         end
 
         for i = 1, #tails do
             local tail = tails[i]
             if StringUtil.isEmpty(tail) or #tail ~= length then
-                return false, ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，tail不能为空，且长度必须等于length'
+                return ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，tail不能为空，且长度必须等于length'
             end
             if tailSet[tail] then
-                return false, ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，tail必须唯一'
+                return ERR_CODE.RULE_FORMAT_ERROR, '参数尾部规则，tail必须唯一'
             end
         end
 
-        ArrayUtil.insert(tails, tails)
+        ArrayUtil.insert(tailSet, tails)
         table.insert(upstreamAndLengthSet, upstreamAndLength)
     end
 
-    return true
+    return ERR_CODE.SUCCESS
 end
 
 return _M

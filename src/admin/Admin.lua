@@ -17,7 +17,8 @@ local log = LogUtil:new("ADMIN")
 local COMMANDS = {
     ADD = require("admin.AddCommand"),
     DELETE = require("admin.DeleteCommand"),
-    QUERY = require("admin.QueryCommand")
+    QUERY = require("admin.QueryCommand"),
+    UPDATE = require("admin.UpdateCommand")
 }
 
 --------------------------------------------------------------------------------------

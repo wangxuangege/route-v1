@@ -5,20 +5,14 @@ local ERR_CODE = require("constant.ErrCode")
 local Mysql = require("respository.mysql.Mysql")
 local LogUtil = require("util.LogUtil")
 local CONSTANT = require("constant.Constant")
-local Config = require("constant.Config")
 local ArrayUtil = require("util.ArrayUtil")
 
-local log = LogUtil:new("ADD")
+local log = LogUtil:new("UPDATE")
 
 --------------------------------------------------------------------------------------
 -- 执行命令
 --------------------------------------------------------------------------------------
 function invoke(requestParams)
-    local priority = tonumber(requestParams['priority'])
-    if priority then
-        priority = 1
-    end
-
     local ruleType = requestParams['ruleType']
     local rule = CONSTANT.RULE_CLASS_MAP[ruleType]
 
@@ -33,24 +27,26 @@ function invoke(requestParams)
 
     -- 查询目前规则总数
     local code, detail = mysql:query(
-            string.format("select count(*) as num from route_rule"), true)
+            string.format("select count(*) as num from route_rule where id=%s", id), true)
     if code ~= ERR_CODE.SUCCESS then
         log:warn("查询失败，错误原因：", detail)
-        return code, "查询规则总数失败，规则总数会被限制，无法确认是否允许添加规则"
+        return code, "判断规则是否存在异常，无法确认规则是否存在，无法更新"
     end
+
     local num = 0
     if next(detail) then
         num = tonumber(detail[1]['NUM'])
-        if num and num >= Config.ALLOW_RULE_SIZE then
-            return ERR_CODE.ADMIN_BUSINESS_LIMIT, '路由限制规则最多只允许' .. Config.ALLOW_RULE_SIZE .. '条规则'
+        if num == 0 then
+            return ERR_CODE.ADMIN_UN_FIND_RULE, '路由规则不存在，无法更新'
         end
     end
 
-    -- 添加规则
+    -- 更新规则
     local code, detail = mysql:execute(string.format([[
-                insert into route_rule(rule_type, rules_str, priority, status, create_time, update_time)
-                values('%s', '%s', %s, '%s', NOW(), NOW())
-            ]], ruleType, rulesStr, priority, 'OPEN'))
+                update route_rule
+                set rules_str = '%s', status = '%s', priority = %s, update_time = NOW()
+                where id=%s
+            ]], rulesStr, requestParams['status'], requestParams['priority'], requestParams['id']))
 
     if code ~= ERR_CODE.SUCCESS then
         log:warn("规则添加失败，错误码:", code[1], "，错误原因：", detail)
@@ -60,21 +56,28 @@ function invoke(requestParams)
     mysql:release()
 
     return ERR_CODE.SUCCESS
+
 end
 
 --------------------------------------------------------------------------------------
 -- 判断参数是否合法
 -- 添加规则需要判断如下参数
+-- id： 主键
 -- ruleType：规则类型
 -- rulesStr：规则字符串
 -- status：状态
 -- priority: 优先级（若不为空，那么必须为正正数）
 --------------------------------------------------------------------------------------
 function checkParams(requestParams)
+    local id = requestParams['id']
     local ruleType = requestParams['ruleType']
     local rulesStr = requestParams['rulesStr']
     local priority = requestParams['priority']
     local status = requestParams['status']
+
+    if StringUtil.isEmpty(id) then
+        return ERR_CODE.ADMIN_PARAM_ERROR, '规则主键不能为空'
+    end
 
     if StringUtil.isEmpty(ruleType)
             or not CONSTANT.RULE_CLASS_MAP[ruleType] then

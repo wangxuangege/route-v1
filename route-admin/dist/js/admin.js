@@ -21,3 +21,14 @@ StringBuffer.prototype.append = function (str) {
 StringBuffer.prototype.toString = function () {
     return this.__strings__.join("");
 }
+
+/**
+ * 判断字符串末尾匹配
+ *
+ * @param endStr
+ * @returns {boolean}
+ */
+String.prototype.endWith = function (endStr) {
+    var d = this.length - endStr.length;
+    return (d >= 0 && this.lastIndexOf(endStr) == d)
+}

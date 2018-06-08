@@ -197,9 +197,6 @@
             data.rulesStr = data.rulesStr.replace(/[\n\r]/g, '|');
             // 替换所有空格
             data.rulesStr = data.rulesStr.replace(/ /g, '');
-            if (data.rulesStr.endWith('|')) {
-                data.rulesStr = data.rulesStr.sub(0, data.rulesStr.length - 1);
-            }
             if (msg != undefined) {
                 BootstrapDialog.show({
                     type: BootstrapDialog.TYPE_DANGER,

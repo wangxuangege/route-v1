@@ -86,8 +86,15 @@ end
 local function admin(ngx)
     -- 获取ngx请求参数
     local requestParams = NgxUtil.getRequestParams(ngx)
+    if CONFIG.DEBUG then
+        -- 打印请求日志
+        log:info("requestParams=", StringUtil.toJSONString(requestParams))
+    end
     -- 执行业务逻辑
     local code, detail = handle(requestParams)
+    if CONFIG.DEBUG then
+        log:info("code=", StringUtil.toJSONString(code), ",detail=", StringUtil.toJSONString(detail))
+    end
     -- 输出结果
     writeResponse(ngx, code, detail)
 end

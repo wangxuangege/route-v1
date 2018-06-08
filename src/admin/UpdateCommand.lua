@@ -92,7 +92,7 @@ function checkParams(requestParams)
         return ERR_CODE.ADMIN_PARAM_ERROR, '优先级不合法'
     end
 
-    if StringUtil.isEmpty(status) or ArrayUtil.contain({ "OPEN", "CLOSE" }, status) then
+    if StringUtil.isEmpty(status) or not ArrayUtil.contain({ "OPEN", "CLOSE" }, status) then
         return ERR_CODE.ADMIN_PARAM_ERROR, '规则状态不能为空，且必须为OPEN或CLOSE'
     end
 

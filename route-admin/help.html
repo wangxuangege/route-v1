@@ -41,7 +41,6 @@
                         <ul class="nav nav-second-level">
                             <li>
                                 <a href="add.html">添加规则</a>
-                                <a href="update.html">更新规则</a>
                             </li>
                         </ul>
                     </li>
@@ -60,13 +59,25 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-12">
+                <!-- /.col-lg-6 -->
+                <div class="col-lg-6" style="width:100%;">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-
+                            《路由规则介绍》
                         </div>
                         <div class="panel-body">
-
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a href="#general" data-toggle="tab">总体介绍</a>
+                                </li>
+                                <li><a href="#ruleType" data-toggle="tab">规则类型</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade in active" id="general">
+                                </div>
+                                <div class="tab-pane fade" id="ruleType">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -85,12 +96,15 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/css/bootstrap-dialog.min.css"
       rel="stylesheet" type="text/css"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap3-dialog/1.34.9/js/bootstrap-dialog.min.js"></script>
+<script src="http://cdn.bootcss.com/pagedown/1.0/Markdown.Converter.js"></script>
 <script>
-    /**
-     * 加载所有规则
-     */
     $(document).ready(function () {
-
+        var converter = new Markdown.Converter();
+        ["general", "ruleType"].forEach(function (help) {
+            $("#" + help).load("help/" + help + ".md", function (data) {
+                $("#" + help).html(converter.makeHtml(data));
+            });
+        });
     });
 </script>
 </body>

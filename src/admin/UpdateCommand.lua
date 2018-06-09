@@ -27,7 +27,7 @@ function invoke(requestParams)
 
     -- 查询目前规则总数
     local code, detail = mysql:query(
-            string.format("select count(*) as num from route_rule where id=%s", id), true)
+            string.format("select count(*) as num from route_rule where id=%s", requestParams['id']), true)
     if code ~= ERR_CODE.SUCCESS then
         log:warn("查询失败，错误原因：", detail)
         return code, "判断规则是否存在异常，无法确认规则是否存在，无法更新"

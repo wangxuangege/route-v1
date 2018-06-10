@@ -21,3 +21,19 @@ route代码结构
 
 &nbsp;&nbsp;&nbsp;&nbsp;src/route/Route.lua
 
+&nbsp;&nbsp;&nbsp;&nbsp;详细代码结构如下：
+* src
+    * __test 单元测试
+    * admin 路由规则后台管理平台
+        * Admin 路由规则后台管理入口
+        * 其他 支持的操作命令
+    * constant
+        * Config 系统配置
+        * Constant 系统常量
+        * ErrCode 错误码
+    * respository 数据层服务
+    * route
+        * Route 路由计算逻辑入口
+        * RouteContext 路由计算上下文对象
+    * rule 路由规则
+    * util 工具类相关

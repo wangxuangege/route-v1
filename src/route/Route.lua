@@ -104,11 +104,6 @@ local function route(ngx)
 end
 
 if CONFIG.DEBUG then
-    local ngx = {
-        __TEST__ = {
-            ip = "172.168.1.3"
-        }
-    }
     -- DEBUG模式下面直接抛出异常
     route(ngx)
 else

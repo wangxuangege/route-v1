@@ -258,7 +258,8 @@ http {
 
 &nbsp;&nbsp;&nbsp;&nbsp;提供了一个路由规则管理平台，前台是纯html（bootstrap模板）+后台（纯lua编写的），由于没有设置响应的权限等逻辑，因此配置nginx时候需要deny all，只allow有权限访问路由规则管理后台的几台内网IP地址即可，或者在此基础上二次开发支持权限相关的逻辑。
 
-## 3.1 
+## 3.1 路由规则管理平台配置
+
 &nbsp;&nbsp;&nbsp;&nbsp;搭建的测试后台还是在总网关上面，在子配置项route-admin.conf里面配置。另外测试的后台也是允许跨域的，你可以根据自己的实际情况选中，只需要注意admin的入口Admin.lua的路径选择。
 
 ~~~config
@@ -288,11 +289,45 @@ server {
 
 &nbsp;&nbsp;&nbsp;&nbsp;规则配置后台允许规则的添加、更新、修改，另外由于规则配置比较复杂，单独提供了用户手册，集成在后台帮助模块里面。
 
-- 1. 规则配置页面
+- 1 规则配置页面
 
 ![规则配置页面](resources/规则配置页面.png)
 
-- 2. 规则配置帮助页面
+- 2 规则配置帮助页面
 
 ![规则配置帮助页面](resources/规则配置帮助页面.png)
+
+# 4 其他
+
+- 1 数据库配置在src/constant/Config.lua里面配置，路由规则表由如下sql创建：
+
+~~~sql
+-- 创建路由规则表
+create table route_rule
+(
+  id int primary key auto_increment,
+  rule_type varchar(16) not null,
+  rules_str varchar(1024) not null,
+  priority int default 1,
+  status varchar(16) default 'CLOSED',
+  create_time datetime,
+  update_time datetime
+)
+~~~
+
+- 2 本次搭建的实例包括4个nginx实例的配置，建议放置在一个批处理脚本里面完成，如下图所示：
+
+~~~sh
+echo "关闭所有nginx"
+killall nginx
+
+echo "暂停5s..."
+sleep 5s
+
+echo "重启所有nginx"
+/opt/nginx/sbin/nginx -p `pwd` -c /opt/nginx/conf/route-stable.conf
+/opt/nginx/sbin/nginx -p `pwd` -c /opt/nginx/conf/route-beta1.conf
+/opt/nginx/sbin/nginx -p `pwd` -c /opt/nginx/conf/route-beta2.conf
+/opt/nginx/sbin/nginx -p `pwd` -c /opt/nginx/conf/nginx.conf
+~~~
 

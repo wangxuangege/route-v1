@@ -20,7 +20,7 @@ local BaseRule = require("rule.BaseRule")
 -- @return 返回构造好的IP规则对象
 --------------------------------------------------------------------------------------
 function _M:new(rulesStr, priority)
-    return BaseRule:build(CONSTANT.RULE_TYPE.IP_RANGE, rulesStr, priority, _M)
+    return BaseRule:build("IP_RANGE", rulesStr, priority, _M)
 end
 
 --------------------------------------------------------------------------------------

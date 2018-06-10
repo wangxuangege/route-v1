@@ -27,7 +27,7 @@ local BaseRule = require("rule.BaseRule")
 -- errMsg: 若规则无效，存放无效规则的详细原因
 --------------------------------------------------------------------------------------
 function _M:new(rulesStr, priority)
-    return BaseRule:build(CONSTANT.RULE_TYPE.PARAM_TAIL, rulesStr, priority, _M)
+    return BaseRule:build("PARAM_TAIL", rulesStr, priority, _M)
 end
 
 --------------------------------------------------------------------------------------

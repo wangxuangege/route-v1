@@ -1,5 +1,5 @@
 local ParamTailRule = require("rule.ParamTailRule")
-local RouteContext = require("context.RouteContext")
+local RouteContext = require("route.RouteContext")
 local StringUtil = require("util.StringUtil")
 local ERR_CODE = require("constant.ErrCode")
 local LogUtil = require("util.LogUtil")

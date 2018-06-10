@@ -330,4 +330,3 @@ echo "重启所有nginx"
 /opt/nginx/sbin/nginx -p `pwd` -c /opt/nginx/conf/route-beta2.conf
 /opt/nginx/sbin/nginx -p `pwd` -c /opt/nginx/conf/nginx.conf
 ~~~
-

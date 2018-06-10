@@ -22,7 +22,6 @@ route代码结构
 &nbsp;&nbsp;&nbsp;&nbsp;src/route/Route.lua
 
 &nbsp;&nbsp;&nbsp;&nbsp;详细代码结构如下：
-* src
     * __test 单元测试
     * admin 路由规则后台管理平台
         * Admin 路由规则后台管理入口

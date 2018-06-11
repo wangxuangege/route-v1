@@ -67,6 +67,6 @@ toJSONString = function(obj)
     if type(obj) ~= 'table' then
         return tostring(obj)
     end
-    local json = require("json")
+    local json = require("cjson")
     return json.encode(obj)
 end

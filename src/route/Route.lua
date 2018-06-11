@@ -6,8 +6,8 @@ local CONFIG = require("constant.Config")
 local CONSTANT = require("constant.Constant")
 local ERR_CODE = require("constant.ErrCode")
 local RouteContext = require("route.RouteContext")
-local Mysql = require("respository.mysql.Mysql")
 local StringUtil = require("util.StringUtil")
+local RouteRuleService = require("respository.service.RouteRuleService")
 
 local log = LogUtil:new("ROUTE")
 
@@ -34,12 +34,10 @@ local function queryAllRules()
         return {}
     end
 
-    local mysql = Mysql:create()
-    local code, detail = mysql:query("select * from route_rule where status='OPEN'")
+    local code, detail = RouteRuleService.selectRouteRulesByStatus('OPEN')
     if code ~= ERR_CODE.SUCCESS then
         return code, detail
     end
-    mysql:release()
 
     local result = {}
 

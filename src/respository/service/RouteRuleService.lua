@@ -41,7 +41,7 @@ end
 --------------------------------------------------------------------------------------
 function selectRouteRuleById(id)
     local code, detail = Mysql.sQuery(
-            string.format("select * from route_rule where id=id", id), true)
+            string.format("select * from route_rule where id=%s", id), true)
 
     if code ~= ERR_CODE.SUCCESS then
         log:warn("查询失败，错误原因：", detail)

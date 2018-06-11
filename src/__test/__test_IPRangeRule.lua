@@ -1,5 +1,5 @@
 local IPRangeRule = require("rule.IPRangeRule")
-local RouteContext = require("context.RouteContext")
+local RouteContext = require("route.RouteContext")
 local StringUtil = require("util.StringUtil")
 local LogUtil = require("util.LogUtil")
 local ERR_CODE = require("constant.ErrCode")

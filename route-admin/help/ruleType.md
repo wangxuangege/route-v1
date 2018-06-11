@@ -34,7 +34,7 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5. 参数key与尾部长度构成唯一的键，若不唯一，表示子规则可以简化。
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp6. 参数尾部匹配规则举例：mid~3~upstream1,000,001,5DD,003,444,007|instMid~6~upstream2,DEFAULT,123456。该规则表示，若请求的参数mid对应的值的末尾3位在000、001、5DD、003、444、007中，那么命中路由upstream1；若请求的参数instMid对应的值的末尾6位在DEFAULT、123456中，那么命中路由upstream；否则，没有命中该规则。
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;6. 参数尾部匹配规则举例：mid~3~upstream1,000,001,5DD,003,444,007|instMid~6~upstream2,DEFAULT,123456。该规则表示，若请求的参数mid对应的值的末尾3位在000、001、5DD、003、444、007中，那么命中路由upstream1；若请求的参数instMid对应的值的末尾6位在DEFAULT、123456中，那么命中路由upstream；否则，没有命中该规则。
 
 
 

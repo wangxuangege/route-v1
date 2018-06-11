@@ -119,7 +119,7 @@ end
 -- 插入规则
 --------------------------------------------------------------------------------------
 function insertRouteRule(rule)
-    local code, detail = mysql:execute(string.format([[
+    local code, detail = Mysql.sExecute(string.format([[
                 insert into route_rule(rule_type, rules_str, priority, status, create_time, update_time)
                 values('%s', '%s', %s, '%s', NOW(), NOW())
             ]], rule['ruleType'], rule['rulesStr'], rule['priority'], rule['status']))

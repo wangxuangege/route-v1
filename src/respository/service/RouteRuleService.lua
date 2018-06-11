@@ -89,7 +89,7 @@ end
 --------------------------------------------------------------------------------------
 function deleteRouteRuleById(id)
     local code, detail = Mysql.sExecute(
-            string.format("delete from route_rule where id=id", id))
+            string.format("delete from route_rule where id=%s", id))
 
     if code ~= ERR_CODE.SUCCESS then
         log:warn("删除失败，错误码:", code[1], "，错误原因：", detail)

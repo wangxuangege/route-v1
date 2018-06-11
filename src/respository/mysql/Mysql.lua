@@ -153,7 +153,7 @@ end
 --------------------------------------------------------------------------------------
 function _M.sExecute(sql)
     local mysql = _M:create()
-    local code, detail = mysql:query(sql, option)
+    local code, detail = mysql:execute(sql)
     mysql:release()
     return code, detail
 end

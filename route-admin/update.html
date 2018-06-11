@@ -144,7 +144,7 @@
     function loadData() {
         $.post(ADMIN_URL, {command: 'QUERY', type: 'ID', value: ruleId}, function (result) {
             if (result.success) {
-                render(result.data[0]);
+                render(result.data);
             } else {
                 BootstrapDialog.show({
                     type: BootstrapDialog.TYPE_DANGER,

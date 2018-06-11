@@ -2,28 +2,13 @@ module(..., package.seeall);
 
 local StringUtil = require("util.StringUtil")
 local ERR_CODE = require("constant.ErrCode")
-local Mysql = require("respository.mysql.Mysql")
-local LogUtil = require("util.LogUtil")
-
-local log = LogUtil:new("DELETE")
+local RouteRuleService = require("respository.service.RouteRuleService")
 
 --------------------------------------------------------------------------------------
 -- 执行命令
 --------------------------------------------------------------------------------------
 function invoke(requestParams)
-    local mysql = Mysql:create()
-
-    local code, detail = mysql:execute(
-            string.format("delete from route_rule where id=%s", requestParams['id']))
-
-    if code ~= ERR_CODE.SUCCESS then
-        log:warn("删除失败，错误码:", code[1], "，错误原因：", detail)
-        return code, "规则删除失败"
-    end
-
-    mysql:release()
-
-    return ERR_CODE.SUCCESS
+    return RouteRuleService.deleteRouteRuleById(requestParams['id'])
 end
 
 --------------------------------------------------------------------------------------

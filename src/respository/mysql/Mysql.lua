@@ -1,7 +1,7 @@
 --[[
     封装mysql数据库的操作
 ]]--
-module (..., package.seeall)
+module(..., package.seeall)
 
 local _M = {
     _VERSION = "0.0.1"
@@ -113,7 +113,7 @@ end
 --------------------------------------------------------------------------------------
 function _M:execute(sql)
     if not self.available then
-        return  ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
+        return ERR_CODE.DB_INIT_ERROR, '数据库初始化失败，不能进行数据库操作'
     end
 
     if StringUtil.isEmpty(sql) then
@@ -127,6 +127,35 @@ function _M:execute(sql)
     end
 
     return ERR_CODE.SUCCESS
+end
+
+--------------------------------------------------------------------------------------
+-- 数据库静态查询
+-- @param 查询sql
+-- @param 查询结果映射
+-- @return code detail
+-- 1) 若数据库查询成功，detail为查询的结果
+-- 2) 若数据库查询失败，detail为失败的原因
+--------------------------------------------------------------------------------------
+function _M.sQuery(sql, option)
+    local mysql = _M:create()
+    local code, detail = mysql:query(sql, option)
+    mysql:release()
+    return code, detail
+end
+
+--------------------------------------------------------------------------------------
+-- 数据库静态增删改
+-- @param 增删改的sql
+-- @return code detail
+-- 1) 若数据库查询成功
+-- 2) 若数据库查询失败，detail为失败的原因
+--------------------------------------------------------------------------------------
+function _M.sExecute(sql)
+    local mysql = _M:create()
+    local code, detail = mysql:query(sql, option)
+    mysql:release()
+    return code, detail
 end
 
 return _M

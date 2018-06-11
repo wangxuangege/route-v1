@@ -2,40 +2,21 @@ module(..., package.seeall);
 
 local StringUtil = require("util.StringUtil")
 local ERR_CODE = require("constant.ErrCode")
-local Mysql = require("respository.mysql.Mysql")
-local LogUtil = require("util.LogUtil")
-
-local log = LogUtil:new("QUERY")
+local RouteRuleService = require("respository.service.RouteRuleService")
 
 -- 请求参数type允许的类型
 local TYPES = {
-    ALL = "where 1=1",
-    ID = "where id=%s",
-    RULE_TYPE = "where rule_type='%s'",
-    STATUS = "where status='%s'"
+    ALL = RouteRuleService.selectAllRouteRules,
+    ID = RouteRuleService.selectRouteRuleById,
+    RULE_TYPE = RouteRuleService.selectRouteRulesByRuleType,
+    STATUS = RouteRuleService.selectRouteRulesByStatus
 }
 
 --------------------------------------------------------------------------------------
 -- 执行命令
 --------------------------------------------------------------------------------------
 function invoke(requestParams)
-    local type = requestParams['type']
-    local where = TYPES[type]
-    if type ~= 'ALL' then
-        where = string.format(where, requestParams['value'])
-    end
-
-    local mysql = Mysql:create()
-    local code, detail = mysql:query(
-            string.format("select * from route_rule " .. where), true)
-
-    if code ~= ERR_CODE.SUCCESS then
-        log:warn("查询失败，错误原因：", detail)
-        return code, "数据库查询失败"
-    else
-        return ERR_CODE.SUCCESS, detail
-    end
-
+    return TYPES[requestParams['type']](requestParams['value']);
 end
 
 --------------------------------------------------------------------------------------

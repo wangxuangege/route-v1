@@ -34,7 +34,7 @@ local function queryAllRules()
         return {}
     end
 
-    local code, detail = RouteRuleService.selectRouteRulesByStatus('OPEN')
+    local code, detail = RouteRuleService.selectRouteRulesByStatus('OPEN', false)
     if code ~= ERR_CODE.SUCCESS then
         return code, detail
     end
@@ -103,6 +103,13 @@ end
 
 if CONFIG.DEBUG then
     -- DEBUG模式下面直接抛出异常
+    ngx = {
+        __TEST__ = {
+            requestParams = {
+                mid = "19890123003"
+            }
+        }
+    }
     route(ngx)
 else
     -- 保守执行路由计算

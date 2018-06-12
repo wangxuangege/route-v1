@@ -103,13 +103,6 @@ end
 
 if CONFIG.DEBUG then
     -- DEBUG模式下面直接抛出异常
-    ngx = {
-        __TEST__ = {
-            requestParams = {
-                mid = "19890123003"
-            }
-        }
-    }
     route(ngx)
 else
     -- 保守执行路由计算

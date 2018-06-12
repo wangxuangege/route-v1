@@ -169,11 +169,11 @@
      */
     function render(rule) {
         $("#ruleId").html('更新：规则[' + ruleId + ']');
-        $("#ruleType").val(rule.RULE_TYPE);
-        $("#status").val(rule.STATUS);
+        $("#ruleType").val(rule.rule_type);
+        $("#status").val(rule.status);
         // 将|替换为\n
-        $("#rulesStr").val(rule.RULES_STR.replace(/\|/g, '\n'));
-        $("#priority").val(rule.PRIORITY);
+        $("#rulesStr").val(rule.rules_str.replace(/\|/g, '\n'));
+        $("#priority").val(rule.priority);
     }
 
     /**

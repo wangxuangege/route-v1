@@ -3,7 +3,7 @@
  *
  * @type {string}
  */
-var ADMIN_URL = "http://192.168.195.128:8080/admin";
+var ADMIN_URL = "http://172.30.251.33:8099/admin";
 
 /**
  * 字符串buffer类

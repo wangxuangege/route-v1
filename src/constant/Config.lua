@@ -19,10 +19,10 @@ return {
     ALLOW_RULE_SIZE = 30,
 
     -- mysql配置
-    MYSQL_ADDRESS = "192.168.195.128",
+    MYSQL_ADDRESS = "172.30.251.33",
     MYSQL_DB = "route",
     MYSQL_USER = "root",
-    MYSQL_PWD = "root",
+    MYSQL_PWD = "CDE#4rfv",
     MYSQL_PORT = 3306,
     MYSQL_CHARSET = "UTF8",
 

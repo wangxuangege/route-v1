@@ -12,8 +12,8 @@ local log = LogUtil:new("ROUTE_RULE_SERVICE")
 --------------------------------------------------------------------------------------
 -- 查询所有RouteRule
 --------------------------------------------------------------------------------------
-function selectAllRouteRules()
-    local code, detail = Mysql.sQuery("select * from route_rule where 1=1", true)
+function selectAllRouteRules(option)
+    local code, detail = Mysql.sQuery("select * from route_rule where 1=1", option)
 
     if code ~= ERR_CODE.SUCCESS then
         log:warn("查询失败，错误原因：", detail)
@@ -39,9 +39,9 @@ end
 --------------------------------------------------------------------------------------
 -- 根据主键id查询RouteRule
 --------------------------------------------------------------------------------------
-function selectRouteRuleById(id)
+function selectRouteRuleById(id, option)
     local code, detail = Mysql.sQuery(
-            string.format("select * from route_rule where id=%s", id), true)
+            string.format("select * from route_rule where id=%s", id), option)
 
     if code ~= ERR_CODE.SUCCESS then
         log:warn("查询失败，错误原因：", detail)
@@ -57,9 +57,9 @@ end
 --------------------------------------------------------------------------------------
 -- 根据状态查询RouteRule
 --------------------------------------------------------------------------------------
-function selectRouteRulesByStatus(status)
+function selectRouteRulesByStatus(status, option)
     local code, detail = Mysql.sQuery(
-            string.format("select * from route_rule where status='%s'", status), true)
+            string.format("select * from route_rule where status='%s'", status), option)
 
     if code ~= ERR_CODE.SUCCESS then
         log:warn("查询失败，错误原因：", detail)
@@ -72,9 +72,9 @@ end
 --------------------------------------------------------------------------------------
 -- 根据类型查询RouteRule
 --------------------------------------------------------------------------------------
-function selectRouteRulesByRuleType(ruleType)
+function selectRouteRulesByRuleType(ruleType, option)
     local code, detail = Mysql.sQuery(
-            string.format("select * from route_rule where rule_type='%s'", ruleType), true)
+            string.format("select * from route_rule where rule_type='%s'", ruleType), option)
 
     if code ~= ERR_CODE.SUCCESS then
         log:warn("查询失败，错误原因：", detail)

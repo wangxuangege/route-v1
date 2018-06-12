@@ -16,7 +16,7 @@ local TYPES = {
 -- 执行命令
 --------------------------------------------------------------------------------------
 function invoke(requestParams)
-    return TYPES[requestParams['type']](requestParams['value']);
+    return TYPES[requestParams['type']](requestParams['value'], false);
 end
 
 --------------------------------------------------------------------------------------

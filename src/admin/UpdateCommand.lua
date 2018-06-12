@@ -10,7 +10,7 @@ local RouteRuleService = require("respository.service.RouteRuleService")
 -- 执行命令
 --------------------------------------------------------------------------------------
 function invoke(requestParams)
-    local code, detail = RouteRuleService.selectRouteRuleById(requestParams['id'])
+    local code, detail = RouteRuleService.selectRouteRuleById(requestParams['id'], false)
     if code ~= ERR_CODE.SUCCESS then
         return code, "查询路由规则失败，无法确认规则是否存在，更新失败"
     else

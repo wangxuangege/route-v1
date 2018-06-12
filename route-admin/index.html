@@ -174,12 +174,12 @@
             ajax: ADMIN_URL + "?command=QUERY&type=ALL",
             select: true,
             columns: [{
-                data: 'ID',
+                data: 'id',
                 render: function (data, type, row) {
                     return "规则[" + data + "]";
                 }
             }, {
-                data: "RULE_TYPE",
+                data: "rule_type",
                 render: function (data, type, row) {
                     return data == 'IP_RANGE'
                         ? 'IP区间规则'
@@ -188,23 +188,23 @@
                             : data)
                 }
             }, {
-                data: "RULES_STR"
+                data: "rules_str"
             }, {
-                data: "PRIORITY"
+                data: "priority"
             }, {
-                data: "STATUS",
+                data: "status",
                 render: function (data, type, row) {
                     return data == 'OPEN' ? '有效' : '无效';
                 }
             }, {
-                data: "CREATE_TIME"
+                data: "create_time"
             }, {
-                data: "UPDATE_TIME"
+                data: "update_time"
             }, {
                 data: "*",
                 render: function (data, type, row) {
-                    return '<button type="button" class="btn btn-outline btn-primary btn-xs" onclick="updateRule(' + row.ID + ')">更新</button>' +
-                        '&nbsp;&nbsp;<button type="button" class="btn btn-outline btn-primary btn-xs" onclick="deleteRule(' + row.ID + ')">删除</button>';
+                    return '<button type="button" class="btn btn-outline btn-primary btn-xs" onclick="updateRule(' + row.id + ')">更新</button>' +
+                        '&nbsp;&nbsp;<button type="button" class="btn btn-outline btn-primary btn-xs" onclick="deleteRule(' + row.id + ')">删除</button>';
                 }
             }],
             language: {
